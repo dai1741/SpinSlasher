@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerInfo {
 	public string name;
 	public string internalName;
+	public string highscoreSuffix;
 	public string longName;
 	public int requiredStars;
 	public GameObject playerHolder;

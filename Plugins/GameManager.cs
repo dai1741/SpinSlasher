@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour {
 			Application.LoadLevel("titleScene");
 			return;
 		}
-		Instantiate(EntireGameManager.instance.currentPlayer);
+		Instantiate(EntireGameManager.instance.currentPlayer.playerHolder);
 		MigrateGameInfo();
 		
 		health = initialHealth;
@@ -158,6 +158,7 @@ public class GameManager : MonoBehaviour {
 			if(gotHighscore || mode.score < score) {
 				gotHighscore = true;
 				mode.score = score;
+				mode.scoreSuffix = EntireGameManager.instance.currentPlayer.highscoreSuffix;
 				GUILayout.Label("You've got a highscore in " + mode.name + " mode! Well done :)");
 			}
 			else {

@@ -24,7 +24,7 @@ public class EntireGameManager : MonoBehaviour {
 	
 	public GameMode currentGameMode { get; set;}
 	
-	public GameObject currentPlayer;
+	public PlayerInfo currentPlayer;
 	
 	public int numMinStars { get; protected set;}
 	
@@ -33,6 +33,8 @@ public class EntireGameManager : MonoBehaviour {
 			instance = this;
 			DontDestroyOnLoad(this); //gameObject??
 			MyPrefs.InitDefaults();
+			
+			currentPlayer = characters[0];
 		}
 		else if(instance != this) {
 			Destroy(gameObject); //HAHAHA

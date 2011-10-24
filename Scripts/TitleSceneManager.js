@@ -2,7 +2,6 @@ var deleteAudioSource : AudioSource;
 var completeStar : Texture2D;
 private var availableCharas : int[];
 private var characterNames : String[];
-private var playerHolders : GameObject[];
 
 
 function Start() {
@@ -16,20 +15,17 @@ function Start() {
 	//Linqつかいたい 
 	var availableCharasTemp = new Array();
 	var characterNamesTemp = new Array();
-	var playerHoldersTemp = new Array();
 	var characters : PlayerInfo[] = EntireGameManager.instance.characters;
 	for(var i = 0; i < characters.Length; i++) {
 		if(characters[i].unlocked) {
 			availableCharasTemp.Push(i);
 			characterNamesTemp.Push(characters[i].name);
-			playerHoldersTemp.Push(characters[i].playerHolder);
 		}
 	}
 	availableCharas = availableCharasTemp.ToBuiltin(int);
 	characterNames = characterNamesTemp.ToBuiltin(String);
-	playerHolders = playerHoldersTemp.ToBuiltin(GameObject);
 	
-	charaIndex = System.Array.IndexOf(playerHolders, EntireGameManager.instance.currentPlayer);
+	charaIndex = System.Array.IndexOf(EntireGameManager.instance.characters, EntireGameManager.instance.currentPlayer);
 }
 
 enum GUIState { normal, selectingGameModes, watchingRecords, deletingRecords,
@@ -52,7 +48,7 @@ private function SupplyNewUnlocked() {
 }
 
 function OnGUI() {
-	var width = Screen.width < 500 ? Screen.width/9 * 4 : Screen.width/3; //なんとか押し込む
+	var width = Screen.width <= 600 ? Screen.width/9 * 4 : Screen.width/3; //なんとか押し込む
 	var area = new Rect (Screen.width/2 - width/2, Screen.height/2 - 5, width, Screen.height/2 + 5);
 	GUILayout.BeginArea (area);
 	GUILayout.FlexibleSpace();
@@ -151,7 +147,7 @@ function OnGUI() {
 			GUILayout.BeginHorizontal();
 			GUILayout.Label(mode.unlocked ? mode.name : "???", GUILayout.Width(area.width / 9 * 4));
 			if(mode.score >= 0) {
-				GUILayout.Label("" + mode.score, GUILayout.MinWidth(40)); //数字5個分
+				GUILayout.Label(mode.score + " "+ mode.scoreSuffix, GUILayout.MinWidth(50)); //数字5個分+initials
 				EntireGameManager.instance.DrawStarRatingGUILayout(mode, mode.score);
 			}
 			else GUILayout.Label("Not played");
@@ -212,7 +208,7 @@ function OnGUI() {
 		GUILayout.BeginHorizontal();
 		GUILayout.Label("Chara: "); //テクスチャのがよさげ 
 		charaIndex = GUILayout.SelectionGrid(charaIndex, characterNames, 3);
-		EntireGameManager.instance.currentPlayer = playerHolders[charaIndex];
+		EntireGameManager.instance.currentPlayer = EntireGameManager.instance.characters[charaIndex];
 		GUILayout.EndHorizontal();
 		GUILayout.EndArea();
 	}
