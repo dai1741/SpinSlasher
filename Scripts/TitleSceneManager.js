@@ -1,0 +1,233 @@
+var deleteAudioSource : AudioSource;
+var completeStar : Texture2D;
+private var availableCharas : int[];
+private var characterNames : String[];
+private var playerHolders : GameObject[];
+
+
+function Start() {
+	Time.timeScale = 1;
+	guiState = EntireGameManager.instance.currentGameMode != null
+			? GUIState.selectingGameModes
+			: GUIState.normal;
+	EntireGameManager.instance.UnlockIfAny();
+	SupplyNewUnlocked();
+	
+	//Linqつかいたい 
+	var availableCharasTemp = new Array();
+	var characterNamesTemp = new Array();
+	var playerHoldersTemp = new Array();
+	var characters : PlayerInfo[] = EntireGameManager.instance.characters;
+	for(var i = 0; i < characters.Length; i++) {
+		if(characters[i].unlocked) {
+			availableCharasTemp.Push(i);
+			characterNamesTemp.Push(characters[i].name);
+			playerHoldersTemp.Push(characters[i].playerHolder);
+		}
+	}
+	availableCharas = availableCharasTemp.ToBuiltin(int);
+	characterNames = characterNamesTemp.ToBuiltin(String);
+	playerHolders = playerHoldersTemp.ToBuiltin(GameObject);
+	
+	charaIndex = System.Array.IndexOf(playerHolders, EntireGameManager.instance.currentPlayer);
+}
+
+enum GUIState { normal, selectingGameModes, watchingRecords, deletingRecords,
+		settings, modeUnlocked, charaUnlocked }
+private var guiState = GUIState.normal;
+private var settingsGUI : SettingsGUIFragment = new SettingsGUIFragment();
+
+private var newUnlockedMode : GameMode;
+private var newUnlockedChara : PlayerInfo;
+
+private function SupplyNewUnlocked() {
+	if(EntireGameManager.instance.modeUnlockNotificationQueue.Count > 0) {
+		newUnlockedMode = EntireGameManager.instance.modeUnlockNotificationQueue.Dequeue();
+		guiState = GUIState.modeUnlocked;
+	}
+	else if(EntireGameManager.instance.charaUnlockNotificationQueue.Count > 0) {
+		newUnlockedChara = EntireGameManager.instance.charaUnlockNotificationQueue.Dequeue();
+		guiState = GUIState.charaUnlocked;
+	}
+}
+
+function OnGUI() {
+	var width = Screen.width < 500 ? Screen.width/9 * 4 : Screen.width/3; //なんとか押し込む
+	var area = new Rect (Screen.width/2 - width/2, Screen.height/2 - 5, width, Screen.height/2 + 5);
+	GUILayout.BeginArea (area);
+	GUILayout.FlexibleSpace();
+	
+	if(guiState == GUIState.normal) SupplyNewUnlocked();
+	
+	switch(guiState) {
+	case GUIState.modeUnlocked:
+		WriteLabelInCenter("New Mode Unlocked");
+		
+		var neededMode = EntireGameManager.instance.gameModes[newUnlockedMode.unlockModeIndex];
+		GUILayout.Label("You scored " + neededMode.score
+				+ " pts in " + neededMode.name + " mode and\n"
+				+ newUnlockedMode.name + " mode has been unlocked!");
+		GUILayout.FlexibleSpace();
+		if(GUILayout.Button ("Dismiss"/*, GUILayout.MaxWidth(area.width / 5)*/)) {
+			EntireGameManager.instance.PlayClickSound();
+			newUnlockedMode = null;
+			guiState = GUIState.normal;
+		}
+		break;
+		
+	case GUIState.charaUnlocked:
+		WriteLabelInCenter("New Character Unlocked");
+		//TODO: 中小化 
+		GUILayout.Label("You got " + newUnlockedChara.requiredStars
+				+ " stars on all modes and\n"
+				+ newUnlockedChara.longName + " has been unlocked!");
+		GUILayout.FlexibleSpace();
+		if(GUILayout.Button ("Dismiss")) {
+			EntireGameManager.instance.PlayClickSound();
+			newUnlockedChara = null;
+			guiState = GUIState.normal;
+		}
+		break;
+		
+	case GUIState.normal:
+		if(GUILayout.Button ("Start Game", GUILayout.MinHeight(Screen.height/8))) {
+			EntireGameManager.instance.PlayClickSound();
+			guiState = GUIState.selectingGameModes;
+		}
+		GUILayout.FlexibleSpace();
+		if(GUILayout.Button ("Instructions")) {
+			EntireGameManager.instance.PlayClickSound();
+			Application.LoadLevel("instruction");
+		}
+		GUILayout.BeginHorizontal();
+		if(GUILayout.Button ("Highscores")) {
+			EntireGameManager.instance.PlayClickSound();
+			guiState = GUIState.watchingRecords;
+		}
+		if(GUILayout.Button ("Options")) {
+			EntireGameManager.instance.PlayClickSound();
+			guiState = GUIState.settings;
+		}
+		GUILayout.EndHorizontal();
+		
+		if(!Application.isWebPlayer) {
+			GUILayout.FlexibleSpace();
+			if(GUILayout.Button ("Quit Game")) {
+				Application.Quit();
+			}
+		}
+		break;
+		
+	case GUIState.selectingGameModes:
+		WriteLabelInCenter("Select Game Mode");
+		var gameModes : GameMode[] = EntireGameManager.instance.gameModes;
+		for(var mode in gameModes) {
+			if(mode.unlocked) {
+				if(GUILayout.Button (mode.name/*, GUILayout.Height(Screen.height/8)*/)) {
+					EntireGameManager.instance.PlayClickSound();
+					EntireGameManager.instance.currentGameMode = mode;
+					Application.LoadLevel("playroom");
+				}
+			}
+			else {
+				GUI.enabled = false;
+				neededMode = gameModes[mode.unlockModeIndex];
+				GUILayout.Button (neededMode.unlocked
+						? "Get " + mode.unlockScore + " pts in " + neededMode.name
+						: "Locked");
+				GUI.enabled = true;
+			}
+		}
+		GUILayout.FlexibleSpace();
+		if(GUILayout.Button ("Back to Main Menu")) {
+			guiState = GUIState.normal;
+			EntireGameManager.instance.currentGameMode = null;
+		}
+		break;
+		
+	case GUIState.watchingRecords:
+		WriteLabelInCenter("Highscore");
+		for(var mode in EntireGameManager.instance.gameModes) {
+			GUILayout.BeginHorizontal();
+			GUILayout.Label(mode.unlocked ? mode.name : "???", GUILayout.Width(area.width / 9 * 4));
+			if(mode.score >= 0) {
+				GUILayout.Label("" + mode.score, GUILayout.MinWidth(40)); //数字5個分
+				EntireGameManager.instance.DrawStarRatingGUILayout(mode, mode.score);
+			}
+			else GUILayout.Label("Not played");
+			GUILayout.EndHorizontal();
+		}
+		GUILayout.FlexibleSpace();
+		GUILayout.BeginHorizontal();
+		if(GUILayout.Button ("Delete All")) {
+			EntireGameManager.instance.PlayClickSound();
+			guiState = GUIState.deletingRecords;
+		}
+		if(GUILayout.Button ("Back to Main Menu", GUILayout.MinWidth(area.width / 2 + 20))) {
+			guiState = GUIState.normal;
+		}
+		GUILayout.EndHorizontal();
+		break;
+		
+	case GUIState.deletingRecords:
+		GUILayout.Label("Are you sure you want to delete all highscores?\n\n"
+				+ "Cautions:\n"
+				+ " - This cannot be undone!\n"
+				+ " - Unlocked games will be locked again!");
+		GUILayout.FlexibleSpace();
+		GUILayout.BeginHorizontal();
+		if(GUILayout.Button ("Yes", GUILayout.MaxWidth(Mathf.Min(area.width / 5, 50)))) {
+			for(var mode in EntireGameManager.instance.gameModes) {
+				mode.score = -1;
+				mode.unlocked = false;
+			}
+			EntireGameManager.instance.gameModes[0].unlocked = true;
+			EntireGameManager.PlaySE(deleteAudioSource);
+			guiState = GUIState.watchingRecords;
+		}
+		if(GUILayout.Button ("No") || GUILayout.Button ("Cancel")) {
+			guiState = GUIState.watchingRecords;
+		}
+		
+		GUILayout.EndHorizontal();
+		break;
+		
+	case GUIState.settings:
+		WriteLabelInCenter("Options");
+		settingsGUI.InitIfNeeded();
+		var state = settingsGUI.Draw();
+		if(state == SettingsGUIFragment.MenuState.BACK) {
+			settingsGUI.End();
+			guiState = GUIState.normal;
+		}
+		break;
+	}
+	GUILayout.FlexibleSpace();
+	GUILayout.EndArea();
+	
+	if(availableCharas.length > 1) {
+		area = new Rect(Screen.width - 200, 0, 200, 30);
+		
+		GUILayout.BeginArea (area);
+		GUILayout.BeginHorizontal();
+		GUILayout.Label("Chara: "); //テクスチャのがよさげ 
+		charaIndex = GUILayout.SelectionGrid(charaIndex, characterNames, 3);
+		EntireGameManager.instance.currentPlayer = playerHolders[charaIndex];
+		GUILayout.EndHorizontal();
+		GUILayout.EndArea();
+	}
+	if(EntireGameManager.instance.numMinStars >= GameMode.RATING_SCORES_COUNT) {
+		GUI.Label(Rect(0, 0, 20, 19), completeStar);
+	}
+}
+private var charaIndex = 0;
+
+private function WriteLabelInCenter(str : String) {
+	var orig = GUI.skin.label.alignment;
+	var origColor = GUI.color;
+	GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+	GUI.color = new Color(1, .9, .6, 1);
+	GUILayout.Label(str);
+	GUI.color = origColor;
+	GUI.skin.label.alignment = orig;
+}
