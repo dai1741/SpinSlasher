@@ -16,8 +16,8 @@ private var stopAngle : float = Mathf.Infinity;
 private static final var epsAngle = Mathf.PI / 20;
 
 function Start() {
-	angle = cropRadians(initialAngleDeg * Mathf.Deg2Rad);
-	anglarVelocity = cropRadians(anglarVelocityDeg * Mathf.Deg2Rad);
+	angle = CropRadians(initialAngleDeg * Mathf.Deg2Rad);
+	anglarVelocity = CropRadians(anglarVelocityDeg * Mathf.Deg2Rad);
 	if(directionIsLocal) direction = transform.rotation * direction;
 	direction = direction.normalized;
 	if(playOnAwake) Play();
@@ -29,7 +29,7 @@ function FixedUpdate () {
 			|| Mathf.PI * 2 - angle + stopAngle < epsAngle) Stop();
 	var distance = Mathf.Cos(angle) * radius * Time.deltaTime * anglarVelocity;
 	transform.position += direction * distance;
-	angle = cropRadians(angle + anglarVelocity * Time.deltaTime);
+	angle = CropRadians(angle + anglarVelocity * Time.deltaTime);
 	remainedDuration -= Time.deltaTime;
 }
 
@@ -42,7 +42,7 @@ function Play(duration : float) {
 }
 
 function PlayAndStopAtAngle(stopAngleDeg : float) {
-	stopAngle = cropRadians(stopAngleDeg * Mathf.Deg2Rad);
+	stopAngle = CropRadians(stopAngleDeg * Mathf.Deg2Rad);
 	Play();
 }
 
@@ -51,6 +51,6 @@ function Stop() {
 	playing = false;
 }
 
-static function cropRadians(rad : float) {
+static function CropRadians(rad : float) {
 	return (rad + Mathf.PI * 2) % (Mathf.PI * 2);
 }

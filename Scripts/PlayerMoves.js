@@ -47,7 +47,7 @@ private var origMaterial : Material;
 
 function Start()
 {
-	Time.timeScale = GameManager.instance.timeScale;
+	Time.timeScale = GameManager.Instance.timeScale;
 	controller = GetComponent(CharacterController);
 	playerParts = GameObject.FindGameObjectsWithTag("PlayerPart");
 	for(var part in playerParts) part.active = false;
@@ -58,7 +58,7 @@ function Start()
 	}
 	origMaterial = GetMutekiRenderer().materials[mutekiMaterialIndex];
 	
-	GameManager.instance.spinPointNeededToRespin = spinPointNeededToRespin;
+	GameManager.Instance.SpinPointNeededToRespin = spinPointNeededToRespin;
 }
 
 private var playerParts : GameObject[];
@@ -72,13 +72,13 @@ function Update()
 }
 function FixedUpdate() 
 {
-	if(GameManager.instance == null) return; // has to wait for his awake.
+	if(GameManager.Instance == null) return; // has to wait for his awake.
 	if(transform.position.y < deadY) {
 		OnGameover();
 		return;
 	}
 	if(Input.GetButton("Spin")
-			&& GameManager.instance.spinPoint > (isSpinning ? 0 : GameManager.instance.spinPointNeededToRespin)) {
+			&& GameManager.Instance.spinPoint > (isSpinning ? 0 : GameManager.Instance.SpinPointNeededToRespin)) {
 		if(!isSpinning) {
 			isSpinning = true;
 			combo = 0;
@@ -87,7 +87,7 @@ function FixedUpdate()
 			if(spinEmitter != null) spinEmitter.emit = true;
 			for(var part in playerParts) part.active = true;
 			meshTransform.localScale.x = spinningXScale;
-			GameManager.instance.PlaySE(spinAudioSource);
+			GameManager.Instance.PlaySE(spinAudioSource);
 		}
 	}
 	else {
@@ -102,16 +102,16 @@ function FixedUpdate()
 		}
 	}
 	if(isSpinning || Time.time - lastSpinStartTime < spinPointComsumeMinTime) {
-		if(remainedMutekiTime < invisibleMutekiTime) GameManager.instance.spinPoint -= 
+		if(remainedMutekiTime < invisibleMutekiTime) GameManager.Instance.spinPoint -= 
 				Mathf.Min(spinPointComsumePerSec * Time.deltaTime
 						* (isAerial ? spinPointAerialComsumeRate : 1),
-						GameManager.instance.spinPoint);
+						GameManager.Instance.spinPoint);
 		transform.Rotate(Vector3.up * Time.deltaTime * curRotateSpeed);
 	}
 	else {
-		GameManager.instance.spinPoint = Mathf.Min(GameManager.instance.spinPoint + spinPointRepairPerSec
+		GameManager.Instance.spinPoint = Mathf.Min(GameManager.Instance.spinPoint + spinPointRepairPerSec
 				* (isAerial ? spinPointAerialRepairRate : 1) * Time.deltaTime,
-				GameManager.instance.maxSpinPoint);
+				GameManager.Instance.maxSpinPoint);
 	}
 	
 	if(remainedMutekiTime > 0) {
@@ -168,7 +168,7 @@ function FixedUpdate()
 	isAerial = (flagBits & CollisionFlags.CollidedBelow) == 0;
 	
 	if(lastAerial && !isAerial && secsToJump > 0) {
-		GameManager.instance.PlaySE(fallDownAudioSource);
+		GameManager.Instance.PlaySE(fallDownAudioSource);
 	}
 }
 
@@ -200,11 +200,11 @@ public function OnCollideEnemy(enemy : GameObject) : void {
 	enemyMoves.isDead = true;
 		
 	var explosionPrefab : GameObject;
-	var soundEnabled = GameManager.instance.soundEnabled;
+	var soundEnabled = GameManager.Instance.SoundEnabled;
 	if(!IsSpinningSticky()) {
 		if(remainedMutekiTime == 0) {
-			GameManager.instance.health--;
-			if(GameManager.instance.health <= 0) {
+			GameManager.Instance.health--;
+			if(GameManager.Instance.health <= 0) {
 				OnGameover();
 			}
 			else {
@@ -218,8 +218,8 @@ public function OnCollideEnemy(enemy : GameObject) : void {
 		explosionPrefab = damagedDetonator;
 	}
 	else {
-		var gainPoint = enemyMoves.getPoint(combo++);
-		GameManager.instance.score += gainPoint;
+		var gainPoint = enemyMoves.GetPoint(combo++);
+		GameManager.Instance.score += gainPoint;
 		var pointDisplayerObj : GameObject = Instantiate (pointDisplayer);
 		pointDisplayerObj.transform.position = enemy.transform.position + Vector3.up;
 		pointDisplayerObj.GetComponent.<PointDisplayer>().point = gainPoint;
@@ -260,11 +260,11 @@ private function BlinkPlayer() {
 private var combo: int = 0;
 
 private function OnGameover() {
-	if(!GameManager.instance.gameover) {
-		GameManager.instance.GetComponent.<AudioChain>().StopAudio();
+	if(!GameManager.Instance.Gameover) {
+		GameManager.Instance.GetComponent.<AudioChain>().StopAudio();
 		killedAudio.Play();
 		
-		GameManager.instance.OnGameover();
+		GameManager.Instance.OnGameover();
 	}
 }
 

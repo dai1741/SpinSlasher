@@ -6,18 +6,18 @@ private var characterNames : String[];
 
 function Start() {
 	Time.timeScale = 1;
-	guiState = EntireGameManager.instance.currentGameMode != null
+	guiState = EntireGameManager.Instance.CurrentGameMode != null
 			? GUIState.selectingGameModes
 			: GUIState.normal;
-	EntireGameManager.instance.UnlockIfAny();
+	EntireGameManager.Instance.UnlockIfAny();
 	SupplyNewUnlocked();
 	
 	//Linqつかいたい 
 	var availableCharasTemp = new Array();
 	var characterNamesTemp = new Array();
-	var characters : PlayerInfo[] = EntireGameManager.instance.characters;
+	var characters : PlayerInfo[] = EntireGameManager.Instance.characters;
 	for(var i = 0; i < characters.Length; i++) {
-		if(characters[i].unlocked) {
+		if(characters[i].Unlocked) {
 			availableCharasTemp.Push(i);
 			characterNamesTemp.Push(characters[i].name);
 		}
@@ -25,7 +25,7 @@ function Start() {
 	availableCharas = availableCharasTemp.ToBuiltin(int);
 	characterNames = characterNamesTemp.ToBuiltin(String);
 	
-	charaIndex = System.Array.IndexOf(EntireGameManager.instance.characters, EntireGameManager.instance.currentPlayer);
+	charaIndex = System.Array.IndexOf(EntireGameManager.Instance.characters, EntireGameManager.Instance.currentPlayer);
 }
 
 enum GUIState { normal, selectingGameModes, watchingRecords, deletingRecords,
@@ -37,12 +37,12 @@ private var newUnlockedMode : GameMode;
 private var newUnlockedChara : PlayerInfo;
 
 private function SupplyNewUnlocked() {
-	if(EntireGameManager.instance.modeUnlockNotificationQueue.Count > 0) {
-		newUnlockedMode = EntireGameManager.instance.modeUnlockNotificationQueue.Dequeue();
+	if(EntireGameManager.Instance.modeUnlockNotificationQueue.Count > 0) {
+		newUnlockedMode = EntireGameManager.Instance.modeUnlockNotificationQueue.Dequeue();
 		guiState = GUIState.modeUnlocked;
 	}
-	else if(EntireGameManager.instance.charaUnlockNotificationQueue.Count > 0) {
-		newUnlockedChara = EntireGameManager.instance.charaUnlockNotificationQueue.Dequeue();
+	else if(EntireGameManager.Instance.charaUnlockNotificationQueue.Count > 0) {
+		newUnlockedChara = EntireGameManager.Instance.charaUnlockNotificationQueue.Dequeue();
 		guiState = GUIState.charaUnlocked;
 	}
 }
@@ -59,13 +59,13 @@ function OnGUI() {
 	case GUIState.modeUnlocked:
 		WriteLabelInCenter("New Mode Unlocked");
 		
-		var neededMode = EntireGameManager.instance.gameModes[newUnlockedMode.unlockModeIndex];
-		GUILayout.Label("You scored " + neededMode.score
+		var neededMode = EntireGameManager.Instance.gameModes[newUnlockedMode.unlockModeIndex];
+		GUILayout.Label("You scored " + neededMode.Score
 				+ " pts in " + neededMode.name + " mode and\n"
 				+ newUnlockedMode.name + " mode has been unlocked!");
 		GUILayout.FlexibleSpace();
 		if(GUILayout.Button ("Dismiss"/*, GUILayout.MaxWidth(area.width / 5)*/)) {
-			EntireGameManager.instance.PlayClickSound();
+			EntireGameManager.Instance.PlayClickSound();
 			newUnlockedMode = null;
 			guiState = GUIState.normal;
 		}
@@ -79,7 +79,7 @@ function OnGUI() {
 				+ newUnlockedChara.longName + " has been unlocked!");
 		GUILayout.FlexibleSpace();
 		if(GUILayout.Button ("Dismiss")) {
-			EntireGameManager.instance.PlayClickSound();
+			EntireGameManager.Instance.PlayClickSound();
 			newUnlockedChara = null;
 			guiState = GUIState.normal;
 		}
@@ -87,21 +87,21 @@ function OnGUI() {
 		
 	case GUIState.normal:
 		if(GUILayout.Button ("Start Game", GUILayout.MinHeight(Screen.height/8))) {
-			EntireGameManager.instance.PlayClickSound();
+			EntireGameManager.Instance.PlayClickSound();
 			guiState = GUIState.selectingGameModes;
 		}
 		GUILayout.FlexibleSpace();
 		if(GUILayout.Button ("Instructions")) {
-			EntireGameManager.instance.PlayClickSound();
+			EntireGameManager.Instance.PlayClickSound();
 			Application.LoadLevel("instruction");
 		}
 		GUILayout.BeginHorizontal();
 		if(GUILayout.Button ("Highscores")) {
-			EntireGameManager.instance.PlayClickSound();
+			EntireGameManager.Instance.PlayClickSound();
 			guiState = GUIState.watchingRecords;
 		}
 		if(GUILayout.Button ("Options")) {
-			EntireGameManager.instance.PlayClickSound();
+			EntireGameManager.Instance.PlayClickSound();
 			guiState = GUIState.settings;
 		}
 		GUILayout.EndHorizontal();
@@ -116,19 +116,19 @@ function OnGUI() {
 		
 	case GUIState.selectingGameModes:
 		WriteLabelInCenter("Select Game Mode");
-		var gameModes : GameMode[] = EntireGameManager.instance.gameModes;
+		var gameModes : GameMode[] = EntireGameManager.Instance.gameModes;
 		for(var mode in gameModes) {
-			if(mode.unlocked) {
+			if(mode.Unlocked) {
 				if(GUILayout.Button (mode.name/*, GUILayout.Height(Screen.height/8)*/)) {
-					EntireGameManager.instance.PlayClickSound();
-					EntireGameManager.instance.currentGameMode = mode;
+					EntireGameManager.Instance.PlayClickSound();
+					EntireGameManager.Instance.CurrentGameMode = mode;
 					Application.LoadLevel("playroom");
 				}
 			}
 			else {
 				GUI.enabled = false;
 				neededMode = gameModes[mode.unlockModeIndex];
-				GUILayout.Button (neededMode.unlocked
+				GUILayout.Button (neededMode.Unlocked
 						? "Get " + mode.unlockScore + " pts in " + neededMode.name
 						: "Locked");
 				GUI.enabled = true;
@@ -137,18 +137,18 @@ function OnGUI() {
 		GUILayout.FlexibleSpace();
 		if(GUILayout.Button ("Back to Main Menu")) {
 			guiState = GUIState.normal;
-			EntireGameManager.instance.currentGameMode = null;
+			EntireGameManager.Instance.CurrentGameMode = null;
 		}
 		break;
 		
 	case GUIState.watchingRecords:
 		WriteLabelInCenter("Highscore");
-		for(var mode in EntireGameManager.instance.gameModes) {
+		for(var mode in EntireGameManager.Instance.gameModes) {
 			GUILayout.BeginHorizontal();
-			GUILayout.Label(mode.unlocked ? mode.name : "???", GUILayout.Width(area.width / 9 * 4));
-			if(mode.score >= 0) {
-				GUILayout.Label(mode.score + " "+ mode.scoreSuffix, GUILayout.MinWidth(50)); //数字5個分+initials
-				EntireGameManager.instance.DrawStarRatingGUILayout(mode, mode.score);
+			GUILayout.Label(mode.Unlocked ? mode.name : "???", GUILayout.Width(area.width / 9 * 4));
+			if(mode.Score >= 0) {
+				GUILayout.Label(mode.Score + " " + mode.ScoreSuffix, GUILayout.MinWidth(50)); //数字5個分+initials
+				EntireGameManager.Instance.DrawStarRatingGUILayout(mode, mode.Score);
 			}
 			else GUILayout.Label("Not played");
 			GUILayout.EndHorizontal();
@@ -156,7 +156,7 @@ function OnGUI() {
 		GUILayout.FlexibleSpace();
 		GUILayout.BeginHorizontal();
 		if(GUILayout.Button ("Delete All")) {
-			EntireGameManager.instance.PlayClickSound();
+			EntireGameManager.Instance.PlayClickSound();
 			guiState = GUIState.deletingRecords;
 		}
 		if(GUILayout.Button ("Back to Main Menu", GUILayout.MinWidth(area.width / 2 + 20))) {
@@ -173,11 +173,11 @@ function OnGUI() {
 		GUILayout.FlexibleSpace();
 		GUILayout.BeginHorizontal();
 		if(GUILayout.Button ("Yes", GUILayout.MaxWidth(Mathf.Min(area.width / 5, 50)))) {
-			for(var mode in EntireGameManager.instance.gameModes) {
-				mode.score = -1;
-				mode.unlocked = false;
+			for(var mode in EntireGameManager.Instance.gameModes) {
+				mode.Score = -1;
+				mode.Unlocked = false;
 			}
-			EntireGameManager.instance.gameModes[0].unlocked = true;
+			EntireGameManager.Instance.gameModes[0].Unlocked = true;
 			EntireGameManager.PlaySE(deleteAudioSource);
 			guiState = GUIState.watchingRecords;
 		}
@@ -208,11 +208,11 @@ function OnGUI() {
 		GUILayout.BeginHorizontal();
 		GUILayout.Label("Chara: "); //テクスチャのがよさげ 
 		charaIndex = GUILayout.SelectionGrid(charaIndex, characterNames, 3);
-		EntireGameManager.instance.currentPlayer = EntireGameManager.instance.characters[charaIndex];
+		EntireGameManager.Instance.currentPlayer = EntireGameManager.Instance.characters[charaIndex];
 		GUILayout.EndHorizontal();
 		GUILayout.EndArea();
 	}
-	if(EntireGameManager.instance.numMinStars >= GameMode.RATING_SCORES_COUNT) {
+	if(EntireGameManager.Instance.NumMinStars >= GameMode.RATING_SCORES_COUNT) {
 		GUI.Label(Rect(0, 0, 20, 19), completeStar);
 	}
 }

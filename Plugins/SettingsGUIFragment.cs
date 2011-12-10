@@ -7,56 +7,56 @@ public class SettingsGUIFragment {
 		KEEP, CHANGED, BACK, RESUME,
 	}
 	
-	public int changeBits {
+	public int ChangeBits {
 		get; protected set;
 	}
 	public const int CameraChanged = 0x1;
 	public const int SoundChanged = 0x2;
 	public const int MusicChanged = 0x4;
 	
-	public bool drawing {
+	public bool Drawing {
 		get; protected set;
 	}
-	public bool resumeButtonEnabled {
+	public bool ResumeButtonEnabled {
 		get; set;
 	}
 	
-	public int initialCamera {
+	public int InitialCamera {
 		get; protected set;
 	}
-	public bool initialSound {
+	public bool InitialSound {
 		get; protected set;
 	}
-	public bool initialMusic {
+	public bool InitialMusic {
 		get; protected set;
 	}
-	public int newCamera {
+	public int NewCamera {
 		get; protected set;
 	}
-	public bool newSound {
+	public bool NewSound {
 		get; protected set;
 	}
-	public bool newMusic {
+	public bool NewMusic {
 		get; protected set;
 	}
 	
 	public bool InitIfNeeded() {
-		if(!drawing) {
-			drawing = true;
-			initialCamera = newCamera = MyPrefs.cameraIndex;
-			initialSound = newSound = MyPrefs.soundEnabled;
-			initialMusic = newMusic = MyPrefs.musicEnabled;
+		if(!Drawing) {
+			Drawing = true;
+			InitialCamera = NewCamera = MyPrefs.CameraIndex;
+			InitialSound = NewSound = MyPrefs.SoundEnabled;
+			InitialMusic = NewMusic = MyPrefs.MusicEnabled;
 			return true;
 		}
 		return false;
 	}
 	
 	public bool End() {
-		if(drawing) {
-			drawing = false;
-			newCamera = MyPrefs.cameraIndex;
-			newSound = MyPrefs.soundEnabled;
-			newMusic = MyPrefs.musicEnabled;
+		if(Drawing) {
+			Drawing = false;
+			NewCamera = MyPrefs.CameraIndex;
+			NewSound = MyPrefs.SoundEnabled;
+			NewMusic = MyPrefs.MusicEnabled;
 			return true;
 		}
 		return false;
@@ -65,49 +65,49 @@ public class SettingsGUIFragment {
 	
 	public MenuState Draw() {
 		MenuState ret = MenuState.KEEP;
-		changeBits = 0;
+		ChangeBits = 0;
 		
 		GUILayout.BeginHorizontal();
 		GUILayout.Label("Camera:");
-		int index = MyPrefs.cameraIndex;
-		newCamera = GUILayout.SelectionGrid (index, MyPrefs.CAMERA_PREF, 1);
+		int index = MyPrefs.CameraIndex;
+		NewCamera = GUILayout.SelectionGrid (index, MyPrefs.CAMERA_PREF, 1);
 		
-		if(index != newCamera) {
-			MyPrefs.cameraIndex = newCamera;
+		if(index != NewCamera) {
+			MyPrefs.CameraIndex = NewCamera;
 			ret = MenuState.CHANGED;
-			changeBits |= CameraChanged;
+			ChangeBits |= CameraChanged;
 		}
 		GUILayout.EndHorizontal();
 		
-		bool soundEnabled = MyPrefs.soundEnabled;
-		newSound = GUILayout.Toggle(soundEnabled, "Sound Effect");
-		if(soundEnabled != newSound) {
-			MyPrefs.soundEnabled = newSound;
-			EntireGameManager.instance.PlayClickSound(); //テキトウ
+		bool soundEnabled = MyPrefs.SoundEnabled;
+		NewSound = GUILayout.Toggle(soundEnabled, "Sound Effect");
+		if(soundEnabled != NewSound) {
+			MyPrefs.SoundEnabled = NewSound;
+			EntireGameManager.Instance.PlayClickSound(); //テキトウ
 			ret = MenuState.CHANGED;
-			changeBits |= SoundChanged;
+			ChangeBits |= SoundChanged;
 		}
-		bool musicEnabled = MyPrefs.musicEnabled;
-		newMusic = GUILayout.Toggle(musicEnabled, "Music");
-		if(musicEnabled != newMusic) {
-			MyPrefs.musicEnabled = newMusic;
+		bool musicEnabled = MyPrefs.MusicEnabled;
+		NewMusic = GUILayout.Toggle(musicEnabled, "Music");
+		if(musicEnabled != NewMusic) {
+			MyPrefs.MusicEnabled = NewMusic;
 			ret = MenuState.CHANGED;
-			changeBits |= MusicChanged;
+			ChangeBits |= MusicChanged;
 		}
 		
 		GUILayout.FlexibleSpace();
 		if(GUILayout.Button ("Restore Defaults")) {
 			MyPrefs.RestoreDefaults();
-			EntireGameManager.instance.PlayClickSound();
+			EntireGameManager.Instance.PlayClickSound();
 			ret = MenuState.CHANGED;
-			if(index != (newCamera = MyPrefs.cameraIndex)) changeBits |= CameraChanged;
-			if(soundEnabled != (newSound = MyPrefs.soundEnabled)) changeBits |= SoundChanged;
-			if(musicEnabled != (newMusic = MyPrefs.musicEnabled)) changeBits |= MusicChanged;
+			if(index != (NewCamera = MyPrefs.CameraIndex)) ChangeBits |= CameraChanged;
+			if(soundEnabled != (NewSound = MyPrefs.SoundEnabled)) ChangeBits |= SoundChanged;
+			if(musicEnabled != (NewMusic = MyPrefs.MusicEnabled)) ChangeBits |= MusicChanged;
 		}
 		
 		GUILayout.FlexibleSpace();
 		GUILayout.BeginHorizontal();
-		if(resumeButtonEnabled && GUILayout.Button ("Resume")) {
+		if(ResumeButtonEnabled && GUILayout.Button ("Resume")) {
 			ret = MenuState.RESUME;
 		}
 		if(GUILayout.Button ("Back")) {

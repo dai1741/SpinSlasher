@@ -12,7 +12,7 @@ public class PlayerInfo {
 	public GameObject playerHolder;
 	
 	public const string UNLOCKED_PREF_PREFIX = "PlayerUnlocked_";
-	public bool unlocked {
+	public bool Unlocked {
 		get {
 			return PlayerPrefs.GetInt(UNLOCKED_PREF_PREFIX + internalName, 0) != 0; 
 		}

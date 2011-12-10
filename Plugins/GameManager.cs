@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour {
 
-	public static GameManager instance {
+	public static GameManager Instance {
 		get; protected set;
 	}
 	
@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour {
 	public float spinPoint;
 	
 	private float _spinPointNeededToRespin;
-	public float spinPointNeededToRespin {
+	public float SpinPointNeededToRespin {
 		get {
 			return _spinPointNeededToRespin;
 		}
@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour {
 			maxSpinGUISizeRate = GameObject.Find("MaxSpinPointBar").GetComponent<GUITexture>().pixelInset.width / maxSpinPoint;
 			var texture = GameObject.Find("DangerSpinPointBar").GetComponent<GUITexture>();
 			texture.pixelInset = new Rect(texture.pixelInset.x, texture.pixelInset.y,
-					spinPointNeededToRespin * maxSpinGUISizeRate, texture.pixelInset.height);
+					SpinPointNeededToRespin * maxSpinGUISizeRate, texture.pixelInset.height);
 		}
 	}
 	
@@ -37,16 +37,16 @@ public class GameManager : MonoBehaviour {
 	//public AudioChain bgm;
 	private PlayableAudio bgm; //ファーストパスなのでコンパイラはAudioChainを解決できない
 	
-	public bool gameover {
+	public bool Gameover {
 		get; protected set;
 	} //デバッグ時以外はこれがtrueになったらもうfalseにはならない
 	
-	public bool paused {
+	public bool Paused {
 		get; protected set;
 	}
 	
 	private Camera _mainCamera;
-	public Camera mainCamera {
+	public Camera MainCamera {
 		get { return _mainCamera; }
 		protected set {
 			if(_mainCamera != null) {
@@ -68,20 +68,20 @@ public class GameManager : MonoBehaviour {
 	[System.NonSerialized]
 	public int score = 0;
 	
-	public bool soundEnabled {
+	public bool SoundEnabled {
 		get; protected set;
 	}
 	
 	void Awake() {
-		instance = this;
+		Instance = this;
 	}
 	
 	void Start() {
-		if(EntireGameManager.instance == null) { //for debug
+		if(EntireGameManager.Instance == null) { //for debug
 			Application.LoadLevel("titleScene");
 			return;
 		}
-		Instantiate(EntireGameManager.instance.currentPlayer.playerHolder);
+		Instantiate(EntireGameManager.Instance.currentPlayer.playerHolder);
 		MigrateGameInfo();
 		
 		health = initialHealth;
@@ -89,11 +89,11 @@ public class GameManager : MonoBehaviour {
 		
 		updateCamera();
 		
-		soundEnabled = MyPrefs.soundEnabled;
+		SoundEnabled = MyPrefs.SoundEnabled;
 		bgm = (PlayableAudio) GetComponent("AudioChain");
-		if(MyPrefs.musicEnabled) bgm.StartAudio();
+		if(MyPrefs.MusicEnabled) bgm.StartAudio();
 		
-		settingsGUI.resumeButtonEnabled = true;
+		settingsGUI.ResumeButtonEnabled = true;
 		
 		Instantiate(mode.field);
 		
@@ -107,32 +107,32 @@ public class GameManager : MonoBehaviour {
 	
 	private GameMode mode;
 	private void MigrateGameInfo() {
-		mode = EntireGameManager.instance.currentGameMode;
+		mode = EntireGameManager.Instance.CurrentGameMode;
 		Time.timeScale = timeScale = mode.timeScale;
 		initialHealth = mode.initialPlayerHealth;
 	}
 	
 	void updateCamera() {
 		int i = PlayerPrefs.GetInt("Camera");
-		mainCamera = GameObject.Find(MyPrefs.CAMERA_PREF[i] + " Camera").GetComponent<Camera>();
+		MainCamera = GameObject.Find(MyPrefs.CAMERA_PREF[i] + " Camera").GetComponent<Camera>();
 	}
 	
 	void Update() {
 		if(Input.GetButtonDown("Pause")) {
-			setPause(!paused);
+			setPause(!Paused);
 			showingSettings = false;
 		}
-		AudioListener.pause = paused;
+		AudioListener.pause = Paused;
 	}
 	
 	public void setPause(bool pause) {
-		paused = pause;
-		Time.timeScale = paused ? 0 : timeScale;
+		Paused = pause;
+		Time.timeScale = Paused ? 0 : timeScale;
 	}
 	
 	void OnApplicationPause(bool pause) {
 		if(pause) setPause(true);
-		AudioListener.pause = paused;
+		AudioListener.pause = Paused;
 	}
 	
 	private bool showingSettings = false;
@@ -143,7 +143,7 @@ public class GameManager : MonoBehaviour {
 		texture.pixelInset = new Rect(texture.pixelInset.x, texture.pixelInset.y,
 				spinPoint * maxSpinGUISizeRate, texture.pixelInset.height);
 		
-		if(gameover) {
+		if(Gameover) {
 			Time.timeScale = 0;
 			
 			GUI.Box (new Rect (Screen.width/2 - 120, Screen.height/2 - 120, 240, 240), "Game Over");
@@ -151,18 +151,18 @@ public class GameManager : MonoBehaviour {
 		
 			GUILayout.BeginHorizontal();
 			GUILayout.Label("Your score: " + score);
-			EntireGameManager.instance.DrawStarRatingGUILayout(mode, score);
+			EntireGameManager.Instance.DrawStarRatingGUILayout(mode, score);
 			GUILayout.EndHorizontal();
 			
 			GUILayout.BeginHorizontal();
-			if(gotHighscore || mode.score < score) {
+			if(gotHighscore || mode.Score < score) {
 				gotHighscore = true;
-				mode.score = score;
-				mode.scoreSuffix = EntireGameManager.instance.currentPlayer.highscoreSuffix;
+				mode.Score = score;
+				mode.ScoreSuffix = EntireGameManager.Instance.currentPlayer.highscoreSuffix;
 				GUILayout.Label("You've got a highscore in " + mode.name + " mode! Well done :)");
 			}
 			else {
-				GUILayout.Label("(Best score: " + mode.score + ")");
+				GUILayout.Label("(Best score: " + mode.Score + ")");
 			}
 			if(GUILayout.Button (new GUIContent(tweetButtonIcon, "Tweet the score!"),
 			                     GUIStyle.none, GUILayout.ExpandWidth(false))) {
@@ -171,7 +171,7 @@ public class GameManager : MonoBehaviour {
 				//ajaxからサーバーサイドからtwitterにアクセスするのが一番楽かな 
 				var url = "https://twitter.com/share?text="
 						+ WWW.EscapeURL(string.Format(tweetFormatString, mode.name, score,
-					                              EntireGameManager.instance.currentPlayer.name))
+					                              EntireGameManager.Instance.currentPlayer.name))
 						+ "&url=" + WWW.EscapeURL(gameUrl);
 				if(Application.isWebPlayer) Application.ExternalEval("window.open('" + url + "')");
 				else Application.OpenURL(url);
@@ -186,7 +186,7 @@ public class GameManager : MonoBehaviour {
 			
 			
 			if(Debug.isDebugBuild && GUILayout.Button ("Retry (Debug)")) {
-				gameover = false;
+				Gameover = false;
 				Time.timeScale = timeScale;
 				
 				health = initialHealth;
@@ -201,7 +201,7 @@ public class GameManager : MonoBehaviour {
 		
 			GUILayout.EndArea();
 		}
-		else if(paused) {
+		else if(Paused) {
 			Time.timeScale = 0;
 			
 			GUI.Box (new Rect (Screen.width/2 - 120, Screen.height/2 - 120, 240, 240),
@@ -210,14 +210,14 @@ public class GameManager : MonoBehaviour {
 			
 			if(!showingSettings) {
 				if(GUILayout.Button ("Resume")) {
-					paused = false;
+					Paused = false;
 				}
 				else if(GUILayout.Button ("Retry")) {
-					if(mode.score < score) mode.score = score;
+					if(mode.Score < score) mode.Score = score;
 					Application.LoadLevel("playroom");
 				}
 				else if(GUILayout.Button ("Quit")) {
-					if(mode.score < score) mode.score = score;
+					if(mode.Score < score) mode.Score = score;
 					Application.LoadLevel("titleScene");
 				}
 				else if(GUILayout.Button ("Settings")) {
@@ -229,18 +229,18 @@ public class GameManager : MonoBehaviour {
 				SettingsGUIFragment.MenuState state = settingsGUI.Draw();
 				//C#のswitch文むずすぎ 
 				if(state == SettingsGUIFragment.MenuState.CHANGED) {
-					if((settingsGUI.changeBits & SettingsGUIFragment.CameraChanged) != 0) {
+					if((settingsGUI.ChangeBits & SettingsGUIFragment.CameraChanged) != 0) {
 						updateCamera();
 					}
 				}
 				else if(state == SettingsGUIFragment.MenuState.RESUME
 				        || state == SettingsGUIFragment.MenuState.BACK) {
-					paused = state == SettingsGUIFragment.MenuState.BACK;
+					Paused = state == SettingsGUIFragment.MenuState.BACK;
 					showingSettings = false;
 					settingsGUI.End();
-					soundEnabled = settingsGUI.newSound;
-					if(settingsGUI.initialMusic != settingsGUI.newMusic) {
-						if(settingsGUI.newMusic) bgm.StartAudio();
+					SoundEnabled = settingsGUI.NewSound;
+					if(settingsGUI.InitialMusic != settingsGUI.NewMusic) {
+						if(settingsGUI.NewMusic) bgm.StartAudio();
 						else {
 							bgm.StopAudio();
 						}
@@ -250,7 +250,7 @@ public class GameManager : MonoBehaviour {
 			}
 		
 			GUILayout.EndArea();
-			Time.timeScale = paused ? 0 : timeScale;
+			Time.timeScale = Paused ? 0 : timeScale;
 		}
 		
 		const float initX = 10, iconSize = 30, intervalX = 10;
@@ -266,11 +266,11 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void OnGameover() {
-		gameover = true;
+		Gameover = true;
 	}
 	
 	//EntireGameManagerにも同じ関数があるけど、こちらの方が速い
 	public void PlaySE(AudioSource source) {
-		if(soundEnabled) source.Play();
+		if(SoundEnabled) source.Play();
 	}
 }

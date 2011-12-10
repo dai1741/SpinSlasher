@@ -10,7 +10,7 @@ using System.Linq;
 [RequireComponent (typeof (AudioSource))]
 public class EntireGameManager : MonoBehaviour {
 	
-	public static EntireGameManager instance {
+	public static EntireGameManager Instance {
 		get; protected set;
 	}
 	
@@ -22,31 +22,31 @@ public class EntireGameManager : MonoBehaviour {
 	public readonly Queue<GameMode> modeUnlockNotificationQueue = new Queue<GameMode>();
 	public readonly Queue<PlayerInfo> charaUnlockNotificationQueue = new Queue<PlayerInfo>();
 	
-	public GameMode currentGameMode { get; set;}
+	public GameMode CurrentGameMode { get; set;}
 	
 	public PlayerInfo currentPlayer;
 	
-	public int numMinStars { get; protected set;}
+	public int NumMinStars { get; protected set;}
 	
 	void Awake() {
-		if(instance == null) {
-			instance = this;
+		if(Instance == null) {
+			Instance = this;
 			DontDestroyOnLoad(this); //gameObject??
 			MyPrefs.InitDefaults();
 			
 			currentPlayer = characters[0];
 		}
-		else if(instance != this) {
+		else if(Instance != this) {
 			Destroy(gameObject); //HAHAHA
 		}
 	}
 	
 	public void OnApplicationQuit () {
-		instance = null;
+		Instance = null;
 	}
 	
 	public static void PlaySE(AudioSource source) {
-		if(MyPrefs.soundEnabled) source.Play();
+		if(MyPrefs.SoundEnabled) source.Play();
 	}
 	
 	public void PlayClickSound() {
@@ -59,24 +59,24 @@ public class EntireGameManager : MonoBehaviour {
 	}
 	
 	public void UnlockGameModes() {
-		gameModes[0].unlocked = true; //最初は常にunlocked
+		gameModes[0].Unlocked = true; //最初は常にunlocked
 		foreach(var mode in from m in gameModes
-				where !m.unlocked && m.unlockScore <= gameModes[m.unlockModeIndex].score
+				where !m.Unlocked && m.unlockScore <= gameModes[m.unlockModeIndex].Score
 				select m) {
-			mode.unlocked = true;
+			mode.Unlocked = true;
 			modeUnlockNotificationQueue.Enqueue(mode);
 		}
 	}
 	
 	public void UnlockCharacters() {
-		characters[0].unlocked = true; //最初は常にunlocked
+		characters[0].Unlocked = true; //最初は常にunlocked
 		
-		numMinStars = (from n in Enumerable.Range(0, GameMode.RATING_SCORES_COUNT)
-				where gameModes.All(m => m.ratingScores[n] <= m.score) select n).Count();
+		NumMinStars = (from n in Enumerable.Range(0, GameMode.RATING_SCORES_COUNT)
+				where gameModes.All(m => m.ratingScores[n] <= m.Score) select n).Count();
 		foreach(var chara in from c in characters
-				where !c.unlocked && c.requiredStars <= numMinStars
+				where !c.Unlocked && c.requiredStars <= NumMinStars
 				select c) {
-			chara.unlocked = true;
+			chara.Unlocked = true;
 			charaUnlockNotificationQueue.Enqueue(chara);
 		}
 	}
@@ -95,12 +95,12 @@ public class EntireGameManager : MonoBehaviour {
 	
 	[ContextMenu ("Init sp score")]
 	public void InitScore() {
-		gameModes[2].score = -1;
+		gameModes[2].Score = -1;
 	}
 	
 	[ContextMenu ("Init chara")]
 	public void InitChara() {
-		foreach(var chara in characters) chara.unlocked = false;
+		foreach(var chara in characters) chara.Unlocked = false;
 	}
 	
 }

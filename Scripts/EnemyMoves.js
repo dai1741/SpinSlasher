@@ -34,7 +34,7 @@ public class EnemyMoves extends MonoBehaviour {
 		}
 	}
 	
-	public function getPoint(combo : int): int {
+	public function GetPoint(combo : int): int {
 		return Mathf.Min(basePoint + incresePoint * combo, 300);
 	}
 

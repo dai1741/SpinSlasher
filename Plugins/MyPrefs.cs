@@ -6,7 +6,7 @@ public class MyPrefs {
 	//public static const MyPrefs instance = new MyPrefs();
 	public static readonly string[] CAMERA_PREF = new string[] {"Ue", "Naname", "Yoko"};
 	
-	public static int cameraIndex {
+	public static int CameraIndex {
 		get {
 			return PlayerPrefs.GetInt("Camera"); 
 		}
@@ -15,7 +15,7 @@ public class MyPrefs {
 			PlayerPrefs.SetInt("Camera", value); 
 		}
 	}
-	public static /*float*/ bool soundEnabled {
+	public static /*float*/ bool SoundEnabled {
 		get {
 			return PlayerPrefs.GetInt("SoundEffect") != 0; 
 		}
@@ -23,7 +23,7 @@ public class MyPrefs {
 			PlayerPrefs.SetInt("SoundEffect", value ? 1 : 0); 
 		}
 	}
-	public static /*float*/ bool musicEnabled {
+	public static /*float*/ bool MusicEnabled {
 		get {
 			return PlayerPrefs.GetInt("Music") != 0; 
 		}
@@ -31,32 +31,15 @@ public class MyPrefs {
 			PlayerPrefs.SetInt("Music", value ? 1 : 0); 
 		}
 	}
-	public static bool droidUnlocked {
-		get {
-			return PlayerPrefs.GetInt("DroidUnlocked") != 0; 
-		}
-		set {
-			PlayerPrefs.SetInt("DroidUnlocked", value ? 1 : 0); 
-		}
-	}
-	/*public bool this[string key] {
-		get {
-			return PlayerPrefs.GetInt(key) != 0; 
-		}
-		set {
-			PlayerPrefs.SetInt(key, value ? 1 : 0); 
-		}
-	}*/
 	
 	public static void RestoreDefaults() {
-		cameraIndex = 1;
-		soundEnabled = musicEnabled = true;
+		CameraIndex = 1;
+		SoundEnabled = MusicEnabled = true;
 	}
 	
 	public static void InitDefaults() {
 		if(PlayerPrefs.GetInt("Camera", -1) == -1) {
 			RestoreDefaults();
-			droidUnlocked = false;
 		}
 	}
 }

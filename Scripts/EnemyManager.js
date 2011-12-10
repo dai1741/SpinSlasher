@@ -36,14 +36,14 @@ function Awake() {
 
 function Start() {
 	lastTime = Time.time;
-	if(EntireGameManager.instance != null) {
+	if(EntireGameManager.Instance != null) {
 		MigrateGameInfo();
 		SendMessage(isFirstPlay ? "CreateEnemiesWithDesc" : "CreateEnemies");
 	}
 }
 
 private function MigrateGameInfo() {
-	var mode = EntireGameManager.instance.currentGameMode;
+	var mode = EntireGameManager.Instance.CurrentGameMode;
 	
 	//力技 
 	creatures = mode.creatures;
@@ -58,7 +58,7 @@ private function MigrateGameInfo() {
 	minSpeed = mode.minSpeed;
 	maxSpeed = mode.maxSpeed;
 	
-	isFirstPlay = mode.internalName == "Normal" && mode.score <= 0;
+	isFirstPlay = mode.internalName == "Normal" && mode.Score <= 0;
 }
 
 private function CreateEnemies() {

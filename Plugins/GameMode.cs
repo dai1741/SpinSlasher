@@ -33,7 +33,7 @@ public /*struct*/ class GameMode
 	public const string UNLOCKED_PREF_PREFIX = "Unlocked_";
 	public const int RATING_SCORES_COUNT = 5;
 	
-	public int score {
+	public int Score {
 		get {
 			return PlayerPrefs.GetInt(HIGHSCORE_PREF_PREFIX + internalName, -1); 
 		}
@@ -41,7 +41,7 @@ public /*struct*/ class GameMode
 			PlayerPrefs.SetInt(HIGHSCORE_PREF_PREFIX + internalName, value); 
 		}
 	}
-	public string scoreSuffix {
+	public string ScoreSuffix {
 		get {
 			return PlayerPrefs.GetString(SCORE_SUFFIX_PREF_PREFIX + internalName, ""); 
 		}
@@ -49,7 +49,7 @@ public /*struct*/ class GameMode
 			PlayerPrefs.SetString(SCORE_SUFFIX_PREF_PREFIX + internalName, value); 
 		}
 	}
-	public bool unlocked {
+	public bool Unlocked {
 		get {
 			return PlayerPrefs.GetInt(UNLOCKED_PREF_PREFIX + internalName, 0) != 0; 
 		}
