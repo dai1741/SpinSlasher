@@ -170,7 +170,8 @@ public class GameManager : MonoBehaviour {
 				//webplayerならスコア改ざん防止のチェックサム(というかXorShift)付きでjsに投げて
 				//ajaxからサーバーサイドからtwitterにアクセスするのが一番楽かな 
 				var url = "https://twitter.com/share?text="
-						+ WWW.EscapeURL(string.Format(tweetFormatString, mode.name, score))
+						+ WWW.EscapeURL(string.Format(tweetFormatString, mode.name, score,
+					                              EntireGameManager.instance.currentPlayer.name))
 						+ "&url=" + WWW.EscapeURL(gameUrl);
 				if(Application.isWebPlayer) Application.ExternalEval("window.open('" + url + "')");
 				else Application.OpenURL(url);
