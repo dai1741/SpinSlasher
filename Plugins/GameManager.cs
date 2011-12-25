@@ -164,7 +164,7 @@ public class GameManager : MonoBehaviour {
 			else {
 				GUILayout.Label("(Best score: " + mode.Score + ")");
 			}
-			if(GUILayout.Button (new GUIContent(tweetButtonIcon, "Tweet the score!"),
+			/*if(GUILayout.Button (new GUIContent(tweetButtonIcon, "Tweet the score!"),
 			                     GUIStyle.none, GUILayout.ExpandWidth(false))) {
 				//プラグインあるからoauth使おうと思ったけど、面倒なのでやめた… 
 				//webplayerならスコア改ざん防止のチェックサム(というかXorShift)付きでjsに投げて
@@ -175,7 +175,7 @@ public class GameManager : MonoBehaviour {
 						+ "&url=" + WWW.EscapeURL(gameUrl);
 				if(Application.isWebPlayer) Application.ExternalEval("window.open('" + url + "')");
 				else Application.OpenURL(url);
-			}
+			}*/
 			GUILayout.EndHorizontal();
 			
 			//ツールチップを表示 
