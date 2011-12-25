@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using System;
 using System.Linq;
@@ -19,8 +19,8 @@ public class EntireGameManager : MonoBehaviour {
 	public GameMode[] gameModes;
 	public PlayerInfo[] characters;
 	
-	public readonly Queue<GameMode> modeUnlockNotificationQueue = new Queue<GameMode>();
-	public readonly Queue<PlayerInfo> charaUnlockNotificationQueue = new Queue<PlayerInfo>();
+	public readonly LimitedQueue modeUnlockNotificationQueue = new LimitedQueue(8);
+	public readonly LimitedQueue charaUnlockNotificationQueue = new LimitedQueue(8);
 	
 	public GameMode CurrentGameMode { get; set;}
 	
@@ -60,24 +60,34 @@ public class EntireGameManager : MonoBehaviour {
 	
 	public void UnlockGameModes() {
 		gameModes[0].Unlocked = true; //最初は常にunlocked
-		foreach(var mode in from m in gameModes
-				where !m.Unlocked && m.unlockScore <= gameModes[m.unlockModeIndex].Score
-				select m) {
-			mode.Unlocked = true;
-			modeUnlockNotificationQueue.Enqueue(mode);
+		foreach(var mode in gameModes) {
+			if (!mode.Unlocked && mode.unlockScore <= gameModes[mode.unlockModeIndex].Score) {
+				mode.Unlocked = true;
+				modeUnlockNotificationQueue.Enqueue(mode);
+			}
 		}
 	}
 	
 	public void UnlockCharacters() {
 		characters[0].Unlocked = true; //最初は常にunlocked
 		
-		NumMinStars = (from n in Enumerable.Range(0, GameMode.RATING_SCORES_COUNT)
-				where gameModes.All(m => m.ratingScores[n] <= m.Score) select n).Count();
-		foreach(var chara in from c in characters
-				where !c.Unlocked && c.requiredStars <= NumMinStars
-				select c) {
-			chara.Unlocked = true;
-			charaUnlockNotificationQueue.Enqueue(chara);
+		int n = GameMode.RATING_SCORES_COUNT - 1;
+		for(; n >= 0; n--) {
+			bool isOk = true;
+			foreach(var mode in gameModes) {
+				if (mode.Score < mode.ratingScores[n]) {
+					isOk = false;
+					break;
+				}
+			}
+			if (isOk) break; // ラベルどうやるんだ？ 
+		}
+		NumMinStars = n + 1;
+		foreach(var chara in characters) {
+			if (!chara.Unlocked && chara.requiredStars <= NumMinStars) {
+				chara.Unlocked = true;
+				charaUnlockNotificationQueue.Enqueue(chara);
+			}
 		}
 	}
 	

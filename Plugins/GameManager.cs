@@ -51,12 +51,12 @@ public class GameManager : MonoBehaviour {
 		protected set {
 			if(_mainCamera != null) {
 				_mainCamera.enabled = false;
-				_mainCamera.GetComponent<AudioListener>().enabled = false;
+				Destroy(_mainCamera.GetComponent<AudioListener>());
 				_mainCamera.light.enabled = false;
 			}
 			_mainCamera = value;
 			_mainCamera.enabled = true;
-			_mainCamera.GetComponent<AudioListener>().enabled = true;
+			_mainCamera.gameObject.AddComponent<AudioListener>();
 			//_mainCamera.backgroundColor = mode.bgColor;
 		}
 	}

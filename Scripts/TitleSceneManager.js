@@ -25,7 +25,12 @@ function Start() {
 	availableCharas = availableCharasTemp.ToBuiltin(int);
 	characterNames = characterNamesTemp.ToBuiltin(String);
 	
-	charaIndex = System.Array.IndexOf(EntireGameManager.Instance.characters, EntireGameManager.Instance.currentPlayer);
+	for(i = 0; i < characters.Length; i++) {
+		if(characters[i] == EntireGameManager.Instance.currentPlayer) {
+			charaIndex = i;
+			break;
+		}
+	}
 }
 
 enum GUIState { normal, selectingGameModes, watchingRecords, deletingRecords,

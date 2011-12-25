@@ -23,8 +23,13 @@ public class PointDisplayer extends TransientCameraLooker {
 		mesh.characterSize = baseSize + point * sizeIncrese;
 		if(maxSize > 0 && maxSize < mesh.characterSize) mesh.characterSize = maxSize;
 		
-		var matIndex = thresholds.length > 0 ? System.Array.BinarySearch(thresholds, point) : -1;
-		GetComponent.<Renderer>().material = materials[matIndex < 0 ? -matIndex - 1 : matIndex + 1];
+		var matIndex = 0;
+		if (thresholds.length > 0) {
+			for(; matIndex < thresholds.length; matIndex++) {
+				if (point < thresholds[matIndex]) break;
+			}
+		}
+		GetComponent.<Renderer>().material = materials[matIndex];
 		
 		super();
 	}
