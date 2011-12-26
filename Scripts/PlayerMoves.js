@@ -70,8 +70,34 @@ function Update()
 {
 	if(Input.GetButtonDown("Jump") || Input.GetButton("Jump")) jumpButtonClicked = true;
 }
+private function ReplaceController() 
+{
+		var slopeLimit = controller.slopeLimit;
+		var stepOffset = controller.stepOffset;
+		var height = controller.height;
+		var radius = controller.radius;
+		var center = controller.center;
+		Destroy(controller);
+		controller = null;
+		yield WaitForEndOfFrame();
+		controller = gameObject.AddComponent("CharacterController");
+		yield WaitForEndOfFrame();
+		controller.enabled = true;
+		controller.slopeLimit = slopeLimit;
+		controller.stepOffset = stepOffset;
+		controller.height = height;
+		controller.radius = radius;
+		controller.center = center;
+		transform.position.y += 0.1;
+}
 function FixedUpdate() 
 {
+	if(controller.velocity.x != controller.velocity.x) {
+		//controller.velocity.x = controller.velocity.y = controller.velocity.z = 0;
+		//ReplaceController();
+		OnGameover();
+		return;
+	}
 	if(GameManager.Instance == null) return; // has to wait for his awake.
 	if(transform.position.y < deadY) {
 		OnGameover();
@@ -267,6 +293,3 @@ private function OnGameover() {
 		GameManager.Instance.OnGameover();
 	}
 }
-
-
-@script RequireComponent(CharacterController)

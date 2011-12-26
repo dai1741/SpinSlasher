@@ -49,14 +49,18 @@ public class GameManager : MonoBehaviour {
 	public Camera MainCamera {
 		get { return _mainCamera; }
 		protected set {
+			AudioListener listener;
+			if (_mainCamera == value) return;
 			if(_mainCamera != null) {
 				_mainCamera.enabled = false;
-				Destroy(_mainCamera.GetComponent<AudioListener>());
+				listener = _mainCamera.GetComponent<AudioListener>();
+				listener.enabled = false;
 				_mainCamera.light.enabled = false;
 			}
 			_mainCamera = value;
 			_mainCamera.enabled = true;
-			_mainCamera.gameObject.AddComponent<AudioListener>();
+			listener = _mainCamera.GetComponent<AudioListener>();
+			listener.enabled = true;
 			//_mainCamera.backgroundColor = mode.bgColor;
 		}
 	}
