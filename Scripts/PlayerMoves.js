@@ -68,7 +68,7 @@ private var jumpButtonClicked : boolean;
 
 function Update() 
 {
-	if(Input.GetButtonDown("Jump") || Input.GetButton("Jump")) jumpButtonClicked = true;
+	if(InputReader.Instance.IsTryingToJump) jumpButtonClicked = true;
 }
 function FixedUpdate() 
 {
@@ -77,7 +77,7 @@ function FixedUpdate()
 		OnGameover();
 		return;
 	}
-	if(Input.GetButton("Spin")
+	if(InputReader.Instance.IsTryingToSpin
 			&& GameManager.Instance.spinPoint > (isSpinning ? 0 : GameManager.Instance.SpinPointNeededToRespin)) {
 		if(!isSpinning) {
 			isSpinning = true;
@@ -120,12 +120,7 @@ function FixedUpdate()
 	
 	var oldDirection = moveDirection;
 	var oldFlat = oldDirection; oldFlat.y = 0;
-	moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-	var bigger = Mathf.Max(Mathf.Abs(moveDirection.x), Mathf.Abs(moveDirection.z));
-	if(bigger > 0) {
-		//ななめ移動が速くなるのを補正 
-		moveDirection /= (moveDirection / bigger).magnitude;
-	}
+	moveDirection = InputReader.Instance.Direction;
 	//正面固定で.
 	//moveDirection = baseTransForm.TransformDirection(moveDirection);
 	//var moveFactor = isAerial ? aerialMoveFactor : 1.0;
@@ -142,7 +137,7 @@ function FixedUpdate()
 	}
 	
 	//ここからジャンプ処理。カオス 
-	jumpButtonClicked = jumpButtonClicked || Input.GetButton("Jump");
+	jumpButtonClicked = jumpButtonClicked || InputReader.Instance.IsTryingToJump;
 	
 	if(jumpButtonClicked && !isAerial && secsToJump <= 0) {
 		moveDirection.y = jumpSpeed;
