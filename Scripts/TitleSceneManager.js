@@ -47,7 +47,15 @@ private function SupplyNewUnlocked() {
 	}
 }
 
+private var backButtonPressed : boolean = false;
+
 function OnGUI() {
+
+	// とても不安定 
+	if (!EntireGameManager.Instance.IsMobile && Event.current.type == EventType.Repaint) {
+		backButtonPressed = Input.GetButton("Back");
+	}
+
 	var width = Screen.width <= 600 ? Screen.width/9 * 4 : Screen.width/3; //なんとか押し込む
 	var area = new Rect (Screen.width/2 - width/2, Screen.height/2 - 5, width, Screen.height/2 + 5);
 	GUILayout.BeginArea (area);
@@ -108,7 +116,7 @@ function OnGUI() {
 		
 		if(!Application.isWebPlayer) {
 			GUILayout.FlexibleSpace();
-			if(GUILayout.Button ("Quit Game")) {
+			if(GUILayout.Button ("Quit Game") || (EntireGameManager.Instance.IsMobile && Input.GetButton("Back"))) {
 				Application.Quit();
 			}
 		}
@@ -135,7 +143,7 @@ function OnGUI() {
 			}
 		}
 		GUILayout.FlexibleSpace();
-		if(GUILayout.Button ("Back to Main Menu")) {
+		if(GUILayout.Button ("Back to Main Menu") || backButtonPressed) {
 			guiState = GUIState.normal;
 			EntireGameManager.Instance.CurrentGameMode = null;
 		}
@@ -159,7 +167,7 @@ function OnGUI() {
 			EntireGameManager.Instance.PlayClickSound();
 			guiState = GUIState.deletingRecords;
 		}
-		if(GUILayout.Button ("Back to Main Menu", GUILayout.MinWidth(area.width / 2 + 20))) {
+		if(GUILayout.Button ("Back to Main Menu", GUILayout.MinWidth(area.width / 2 + 20)) || backButtonPressed) {
 			guiState = GUIState.normal;
 		}
 		GUILayout.EndHorizontal();
@@ -181,7 +189,7 @@ function OnGUI() {
 			EntireGameManager.PlaySE(deleteAudioSource);
 			guiState = GUIState.watchingRecords;
 		}
-		if(GUILayout.Button ("No") || GUILayout.Button ("Cancel")) {
+		if(GUILayout.Button ("No") || GUILayout.Button ("Cancel") || backButtonPressed) {
 			guiState = GUIState.watchingRecords;
 		}
 		
@@ -192,7 +200,7 @@ function OnGUI() {
 		WriteLabelInCenter("Options");
 		settingsGUI.InitIfNeeded();
 		var state = settingsGUI.Draw();
-		if(state == SettingsGUIFragment.MenuState.BACK) {
+		if(state == SettingsGUIFragment.MenuState.BACK || backButtonPressed) {
 			settingsGUI.End();
 			guiState = GUIState.normal;
 		}
