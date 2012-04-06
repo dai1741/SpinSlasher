@@ -263,6 +263,11 @@ public class GameManager : MonoBehaviour {
 		float statusWidth = 135 + mode.name.Length * 7;
 		GUI.Label(new Rect(Screen.width - statusWidth, Screen.height - 20, statusWidth, 20),
 		          "Mode: " +  mode.name + "   Score: " + score);
+		
+		// ポーズボタン
+		if (GUILayout.Button("P")) {
+			setPause(!Paused);
+		}
 	}
 
 	public void OnGameover() {
