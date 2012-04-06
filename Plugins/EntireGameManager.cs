@@ -93,6 +93,13 @@ public class EntireGameManager : MonoBehaviour {
 		GUILayout.EndHorizontal();
 	}
 	
+	public bool IsMobile {
+		get {
+			// 暫定 
+			return Application.platform == RuntimePlatform.Android;
+		}
+	}
+	
 	[ContextMenu ("Init sp score")]
 	public void InitScore() {
 		gameModes[2].Score = -1;

@@ -8,7 +8,9 @@ public abstract class InputReader
 	public static InputReader Instance {
 		get {
 			if(_instance == null) {
-				_instance = new KeyboardInputReader();
+				_instance = EntireGameManager.Instance.IsMobile
+					? (InputReader) new PhysicalInputReader()
+					: (InputReader) new KeyboardInputReader();
 			}
 			return _instance;
 		}
@@ -62,19 +64,41 @@ class PhysicalInputReader : InputReader {
 
 	public override Vector3 Direction {
 		get {
-			return Vector3.zero;
+			// code from: http://unity3d.com/support/documentation/ScriptReference/Input-acceleration.html
+			
+			// we assume that device is held parallel to the ground
+    		// and Home button is in the right hand
+			
+			// remap device acceleration axis to game coordinates:
+			//  1) XY plane of the device is mapped onto XZ plane
+			//  2) rotated 90 degrees around Y axis
+			var dir = new Vector3(-Input.acceleration.y, 0, Input.acceleration.x);
+			
+			dir *= 2f; // 増幅 
+			
+			// clamp acceleration vector to unit sphere
+			if (dir.sqrMagnitude > 1)
+				dir.Normalize();
+			// ごく小さいのは無視で 
+			else if (dir.sqrMagnitude < 0.02f)
+				dir = Vector3.zero;
+			
+			return dir;
+			
 		}
 	}
 	
 	public override bool IsTryingToSpin {
 		get {
-			return false;
+			// 画面をタップしていたらスピン 
+			return Input.touches.Length > 0;
 		}
 	}
 	
 	public override bool IsTryingToJump {
 		get {
-			return false;
+			// 上方向の加速度を感じたらジャンプしたことに 
+			return Input.acceleration.z > 0.1f;
 		}
 	}
 }
