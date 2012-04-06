@@ -12,8 +12,10 @@ var brake = 3.0;
 //var baseTransForm : Transform;
 
 var detonator : GameObject;
+var detonatorEconomy : GameObject;
 var damagedDetonator : GameObject;
 var extremeDetonator : GameObject;
+var extremeDetonatorEconomy : GameObject;
 private static final var explosionLife : float = 6.5;
 
 var pointDisplayer : GameObject;
@@ -194,7 +196,7 @@ public function OnCollideEnemy(enemy : GameObject) : void {
 	}
 	enemyMoves.isDead = true;
 		
-	var explosionPrefab : GameObject;
+	var explosionPrefab : GameObject = null;
 	var soundEnabled = GameManager.Instance.SoundEnabled;
 	if(!IsSpinningSticky()) {
 		if(remainedMutekiTime == 0) {
@@ -218,7 +220,12 @@ public function OnCollideEnemy(enemy : GameObject) : void {
 		var pointDisplayerObj : GameObject = Instantiate (pointDisplayer);
 		pointDisplayerObj.transform.position = enemy.transform.position + Vector3.up;
 		pointDisplayerObj.GetComponent.<PointDisplayer>().point = gainPoint;
-		explosionPrefab = combo >= 5 ? extremeDetonator : detonator;
+		if (combo >= 5) {
+			explosionPrefab = EntireGameManager.Instance.IsMobile ? extremeDetonatorEconomy : extremeDetonator;
+		}
+		else {
+			explosionPrefab = EntireGameManager.Instance.IsMobile ? detonatorEconomy : detonator;
+		}
 	}
 	if(explosionPrefab != null) {
 		var explosion : GameObject = Instantiate (explosionPrefab,
