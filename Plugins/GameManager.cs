@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour {
 		health = initialHealth;
 		spinPoint = maxSpinPoint;
 		
-		updateCamera();
+		UpdateCamera();
 		
 		SoundEnabled = MyPrefs.SoundEnabled;
 		bgm = (PlayableAudio) GetComponent("AudioChain");
@@ -112,26 +112,26 @@ public class GameManager : MonoBehaviour {
 		initialHealth = mode.initialPlayerHealth;
 	}
 	
-	void updateCamera() {
+	void UpdateCamera() {
 		int i = PlayerPrefs.GetInt("Camera");
 		MainCamera = GameObject.Find(MyPrefs.CAMERA_PREF[i] + " Camera").GetComponent<Camera>();
 	}
 	
 	void Update() {
 		if(Input.GetButtonDown("Pause")) {
-			setPause(!Paused);
+			SetPause(!Paused);
 			showingSettings = false;
 		}
 		AudioListener.pause = Paused;
 	}
 	
-	public void setPause(bool pause) {
+	public void SetPause(bool pause) {
 		Paused = pause;
 		Time.timeScale = Paused ? 0 : timeScale;
 	}
 	
 	void OnApplicationPause(bool pause) {
-		if(pause) setPause(true);
+		if(pause) SetPause(true);
 		AudioListener.pause = Paused;
 	}
 	
@@ -230,7 +230,7 @@ public class GameManager : MonoBehaviour {
 				//C#のswitch文むずすぎ 
 				if(state == SettingsGUIFragment.MenuState.CHANGED) {
 					if((settingsGUI.ChangeBits & SettingsGUIFragment.CameraChanged) != 0) {
-						updateCamera();
+						UpdateCamera();
 					}
 				}
 				else if(state == SettingsGUIFragment.MenuState.RESUME
@@ -266,7 +266,7 @@ public class GameManager : MonoBehaviour {
 		
 		// ポーズボタン
 		if (GUILayout.Button("P")) {
-			setPause(!Paused);
+			SetPause(!Paused);
 		}
 	}
 
