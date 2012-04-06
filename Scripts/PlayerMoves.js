@@ -228,9 +228,11 @@ public function OnCollideEnemy(enemy : GameObject) : void {
 	if(explosionPrefab != null) {
 		var explosion : GameObject = Instantiate (explosionPrefab,
 				enemy.transform.position, Quaternion.identity);
-		explosion.GetComponent("Detonator").detail = 0.5;
-		explosion.GetComponent("DetonatorSound").maxVolume = 
-				soundEnabled ? 1 : 0;
+		//explosion.GetComponent("Detonator")["detail"] = 0.5;
+		//explosion.GetComponent("DetonatorSound").maxVolume = 
+		//		soundEnabled ? 1 : 0;
+		var sound = explosion.GetComponent("DetonatorSound");
+		sound.GetType().GetField("maxVolume").SetValue(sound, soundEnabled ? 1 : 0);
 		Destroy(explosion, explosionLife); 
 	}
 	

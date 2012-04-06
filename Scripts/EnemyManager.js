@@ -1,7 +1,7 @@
 var creatures : GameObject[];
 var appearOnceIn : float[];
 var initialSpeed = 1.0;
-private var initialSpeedRate;
+private var initialSpeedRate = 0.0;
 var fieldRadius = 1.0;
 var minSpeedIncrease = 0.0;
 var maxSpeedIncrease = 0.0;
