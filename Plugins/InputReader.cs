@@ -74,7 +74,7 @@ class PhysicalInputReader : InputReader {
 			//  2) rotated 90 degrees around Y axis
 			var dir = new Vector3(-Input.acceleration.y, 0, Input.acceleration.x);
 			
-			dir *= 2f; // 増幅 
+			dir *= 2.5f; // 増幅 
 			
 			// clamp acceleration vector to unit sphere
 			if (dir.sqrMagnitude > 1)
@@ -98,7 +98,7 @@ class PhysicalInputReader : InputReader {
 	public override bool IsTryingToJump {
 		get {
 			// 上方向の加速度を感じたらジャンプしたことに 
-			return Input.acceleration.z > 0.1f;
+			return Input.acceleration.z > 0.075f;
 		}
 	}
 }
