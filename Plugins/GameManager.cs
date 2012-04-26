@@ -206,7 +206,8 @@ public class GameManager : MonoBehaviour {
 			
 			GUI.Box (new Rect (Screen.width/2 - 120, Screen.height/2 - 120, 240, 240),
 			         showingSettings ? "Pause - Settings" : "Pause");
-			GUILayout.BeginArea (new Rect (Screen.width/2 - 110, Screen.height/2 - 80, 220, 190));
+			Rect area = new Rect (Screen.width/2 - 110, Screen.height/2 - 80, 220, 190);
+			GUILayout.BeginArea (area);
 			
 			if(!showingSettings) {
 				if(GUILayout.Button ("Resume")) {
@@ -226,12 +227,13 @@ public class GameManager : MonoBehaviour {
 			}
 			else {
 				settingsGUI.InitIfNeeded();
-				SettingsGUIFragment.MenuState state = settingsGUI.Draw();
+				SettingsGUIFragment.MenuState state = settingsGUI.Draw(area);
 				//C#のswitch文むずすぎ 
 				if(state == SettingsGUIFragment.MenuState.CHANGED) {
 					if((settingsGUI.ChangeBits & SettingsGUIFragment.CameraChanged) != 0) {
 						UpdateCamera();
 					}
+					InputReader.UpdateInstance();
 				}
 				else if(state == SettingsGUIFragment.MenuState.RESUME
 				        || state == SettingsGUIFragment.MenuState.BACK) {

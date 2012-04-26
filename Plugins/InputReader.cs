@@ -3,17 +3,17 @@ using UnityEngine;
 
 public abstract class InputReader
 {
-	
 	private static InputReader _instance;
+	
 	public static InputReader Instance {
 		get {
-			if(_instance == null) {
-				_instance = EntireGameManager.Instance.IsMobile
-					? (InputReader) new PhysicalInputReader()
-					: (InputReader) new KeyboardInputReader();
-			}
+			if(_instance == null) UpdateInstance();
 			return _instance;
 		}
+	}
+	
+	public static void UpdateInstance() {
+		_instance = MyPrefs.INPUT_INSTANCES[MyPrefs.InputIndex];
 	}
 	
 	/// <summary>
@@ -62,13 +62,8 @@ class KeyboardInputReader : InputReader {
 
 class PhysicalInputReader : InputReader {
 	
-	InputReader proxy = new KeyboardInputReader();
-	
 	public override Vector3 Direction {
 		get {
-			var dir = proxy.Direction;
-			if (dir != Vector3.zero) return dir;
-			
 			// code from: http://unity3d.com/support/documentation/ScriptReference/Input-acceleration.html
 			
 			// we assume that device is held parallel to the ground
@@ -77,7 +72,7 @@ class PhysicalInputReader : InputReader {
 			// remap device acceleration axis to game coordinates:
 			//  1) XY plane of the device is mapped onto XZ plane
 			//  2) rotated 90 degrees around Y axis
-			dir = new Vector3(-Input.acceleration.y, 0, Input.acceleration.x);
+			var dir = new Vector3(-Input.acceleration.y, 0, Input.acceleration.x);
 			
 			dir *= 2.75f; // 増幅 
 			
@@ -96,14 +91,14 @@ class PhysicalInputReader : InputReader {
 	public override bool IsTryingToSpin {
 		get {
 			// 画面をタップしていたらスピン 
-			return proxy.IsTryingToSpin || Input.touches.Length > 0;
+			return Input.touches.Length > 0;
 		}
 	}
 	
 	public override bool IsTryingToJump {
 		get {
 			// 上方向の加速度を感じたらジャンプしたことに 
-			return proxy.IsTryingToJump || Input.acceleration.z > 0;
+			return Input.acceleration.z > 0;
 		}
 	}
 }

@@ -199,7 +199,7 @@ function OnGUI() {
 	case GUIState.settings:
 		WriteLabelInCenter("Options");
 		settingsGUI.InitIfNeeded();
-		var state = settingsGUI.Draw();
+		var state = settingsGUI.Draw(area);
 		if(state == SettingsGUIFragment.MenuState.BACK || backButtonPressed) {
 			settingsGUI.End();
 			guiState = GUIState.normal;

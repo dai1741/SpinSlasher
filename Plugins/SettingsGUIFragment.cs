@@ -13,6 +13,7 @@ public class SettingsGUIFragment {
 	public const int CameraChanged = 0x1;
 	public const int SoundChanged = 0x2;
 	public const int MusicChanged = 0x4;
+	public const int InputChanged = 0x8;
 	
 	public bool Drawing {
 		get; protected set;
@@ -30,7 +31,13 @@ public class SettingsGUIFragment {
 	public bool InitialMusic {
 		get; protected set;
 	}
+	public int InitialInput {
+		get; protected set;
+	}
 	public int NewCamera {
+		get; protected set;
+	}
+	public int NewInput {
 		get; protected set;
 	}
 	public bool NewSound {
@@ -44,6 +51,7 @@ public class SettingsGUIFragment {
 		if(!Drawing) {
 			Drawing = true;
 			InitialCamera = NewCamera = MyPrefs.CameraIndex;
+			InitialInput = NewInput = MyPrefs.InputIndex;
 			InitialSound = NewSound = MyPrefs.SoundEnabled;
 			InitialMusic = NewMusic = MyPrefs.MusicEnabled;
 			return true;
@@ -55,6 +63,7 @@ public class SettingsGUIFragment {
 		if(Drawing) {
 			Drawing = false;
 			NewCamera = MyPrefs.CameraIndex;
+			NewInput = MyPrefs.InputIndex;
 			NewSound = MyPrefs.SoundEnabled;
 			NewMusic = MyPrefs.MusicEnabled;
 			return true;
@@ -63,12 +72,14 @@ public class SettingsGUIFragment {
 	}
 	
 	
-	public MenuState Draw() {
+	public MenuState Draw(Rect area) {
 		MenuState ret = MenuState.KEEP;
 		ChangeBits = 0;
 		
+		GUILayoutOption widthOp = GUILayout.Width(area.width / 7 * 3);
+		
 		GUILayout.BeginHorizontal();
-		GUILayout.Label("Camera:");
+		GUILayout.Label("Camera:", widthOp);
 		int index = MyPrefs.CameraIndex;
 		NewCamera = GUILayout.SelectionGrid (index, MyPrefs.CAMERA_PREF, 1);
 		
@@ -79,6 +90,19 @@ public class SettingsGUIFragment {
 		}
 		GUILayout.EndHorizontal();
 		
+		GUILayout.BeginHorizontal();
+		GUILayout.Label("Input:", widthOp);
+		int inputIndex = MyPrefs.InputIndex;
+		NewInput = GUILayout.SelectionGrid (inputIndex, MyPrefs.INPUT_PREF, 1);
+		
+		if(inputIndex != NewInput) {
+			MyPrefs.InputIndex = NewInput;
+			ret = MenuState.CHANGED;
+			ChangeBits |= InputChanged;
+		}
+		GUILayout.EndHorizontal();
+		
+		GUILayout.BeginHorizontal();
 		bool soundEnabled = MyPrefs.SoundEnabled;
 		NewSound = GUILayout.Toggle(soundEnabled, "Sound Effect");
 		if(soundEnabled != NewSound) {
@@ -94,6 +118,7 @@ public class SettingsGUIFragment {
 			ret = MenuState.CHANGED;
 			ChangeBits |= MusicChanged;
 		}
+		GUILayout.EndHorizontal();
 		
 		GUILayout.FlexibleSpace();
 		if(GUILayout.Button ("Restore Defaults")) {
@@ -101,6 +126,7 @@ public class SettingsGUIFragment {
 			EntireGameManager.Instance.PlayClickSound();
 			ret = MenuState.CHANGED;
 			if(index != (NewCamera = MyPrefs.CameraIndex)) ChangeBits |= CameraChanged;
+			if(inputIndex != (NewInput = MyPrefs.InputIndex)) ChangeBits |= InputChanged;
 			if(soundEnabled != (NewSound = MyPrefs.SoundEnabled)) ChangeBits |= SoundChanged;
 			if(musicEnabled != (NewMusic = MyPrefs.MusicEnabled)) ChangeBits |= MusicChanged;
 		}

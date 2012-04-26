@@ -6,6 +6,12 @@ public class MyPrefs {
 	//public static const MyPrefs instance = new MyPrefs();
 	public static readonly string[] CAMERA_PREF = new string[] {"Ue", "Naname", "Yoko"};
 	
+	public static readonly string[] INPUT_PREF = new string[] {"Keyboard", "Physics"};
+	public static readonly InputReader[] INPUT_INSTANCES = {
+		new KeyboardInputReader(),
+		new PhysicalInputReader()
+	};
+	
 	public static int CameraIndex {
 		get {
 			return PlayerPrefs.GetInt("Camera"); 
@@ -15,6 +21,16 @@ public class MyPrefs {
 			PlayerPrefs.SetInt("Camera", value); 
 		}
 	}
+	public static int InputIndex {
+		get {
+			return PlayerPrefs.GetInt("InputDevice"); 
+		}
+		set {
+			if(value < 0 || INPUT_PREF.Length <= value) throw new ArgumentOutOfRangeException();
+			PlayerPrefs.SetInt("InputDevice", value); 
+		}
+	}
+	
 	public static /*float*/ bool SoundEnabled {
 		get {
 			return PlayerPrefs.GetInt("SoundEffect") != 0; 
@@ -34,6 +50,7 @@ public class MyPrefs {
 	
 	public static void RestoreDefaults() {
 		CameraIndex = 1;
+		InputIndex = EntireGameManager.Instance.IsMobile ? 1 : 0;
 		SoundEnabled = MusicEnabled = true;
 	}
 	
