@@ -70,7 +70,7 @@ private var jumpButtonClicked : boolean;
 
 function Update() 
 {
-	if(InputReader.Instance.IsTryingToJump) jumpButtonClicked = true;
+	if(GameManager.Instance.InputReader.IsTryingToJump) jumpButtonClicked = true;
 }
 function FixedUpdate() 
 {
@@ -79,7 +79,7 @@ function FixedUpdate()
 		OnGameover();
 		return;
 	}
-	if(InputReader.Instance.IsTryingToSpin
+	if(GameManager.Instance.InputReader.IsTryingToSpin
 			&& GameManager.Instance.spinPoint > (isSpinning ? 0 : GameManager.Instance.SpinPointNeededToRespin)) {
 		if(!isSpinning) {
 			isSpinning = true;
@@ -122,7 +122,7 @@ function FixedUpdate()
 	
 	var oldDirection = moveDirection;
 	var oldFlat = oldDirection; oldFlat.y = 0;
-	moveDirection = InputReader.Instance.Direction;
+	moveDirection = GameManager.Instance.InputReader.Direction;
 	//正面固定で.
 	//moveDirection = baseTransForm.TransformDirection(moveDirection);
 	//var moveFactor = isAerial ? aerialMoveFactor : 1.0;
@@ -139,7 +139,7 @@ function FixedUpdate()
 	}
 	
 	//ここからジャンプ処理。カオス 
-	jumpButtonClicked = jumpButtonClicked || InputReader.Instance.IsTryingToJump;
+	jumpButtonClicked = jumpButtonClicked || GameManager.Instance.InputReader.IsTryingToJump;
 	
 	if(jumpButtonClicked && !isAerial && secsToJump <= 0) {
 		moveDirection.y = jumpSpeed;

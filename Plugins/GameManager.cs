@@ -61,6 +61,17 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 	
+	private InputReader _inputReader;
+	public InputReader InputReader {
+		get {
+			if(_inputReader == null) UpdateInputReader();
+			return _inputReader;
+		}
+	}
+	public void UpdateInputReader() {
+		_inputReader = MyPrefs.INPUT_INSTANCES[MyPrefs.InputIndex];
+	}
+	
 	private float maxSpinGUISizeRate;
 	
 	private SettingsGUIFragment settingsGUI = new SettingsGUIFragment();
@@ -88,6 +99,7 @@ public class GameManager : MonoBehaviour {
 		spinPoint = maxSpinPoint;
 		
 		UpdateCamera();
+		UpdateInputReader();
 		
 		SoundEnabled = MyPrefs.SoundEnabled;
 		bgm = (PlayableAudio) GetComponent("AudioChain");
@@ -233,7 +245,7 @@ public class GameManager : MonoBehaviour {
 					if((settingsGUI.ChangeBits & SettingsGUIFragment.CameraChanged) != 0) {
 						UpdateCamera();
 					}
-					InputReader.UpdateInstance();
+					UpdateInputReader();
 				}
 				else if(state == SettingsGUIFragment.MenuState.RESUME
 				        || state == SettingsGUIFragment.MenuState.BACK) {

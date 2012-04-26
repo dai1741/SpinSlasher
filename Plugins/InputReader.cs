@@ -3,19 +3,6 @@ using UnityEngine;
 
 public abstract class InputReader
 {
-	private static InputReader _instance;
-	
-	public static InputReader Instance {
-		get {
-			if(_instance == null) UpdateInstance();
-			return _instance;
-		}
-	}
-	
-	public static void UpdateInstance() {
-		_instance = MyPrefs.INPUT_INSTANCES[MyPrefs.InputIndex];
-	}
-	
 	/// <summary>
 	/// 移動量を取得する。ベクトルのノルムは最大1
 	/// </summary>
