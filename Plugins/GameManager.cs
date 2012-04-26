@@ -282,6 +282,8 @@ public class GameManager : MonoBehaviour {
 		if (GUILayout.Button("P")) {
 			SetPause(!Paused);
 		}
+
+		InputReader.OnGUI();
 	}
 
 	public void OnGameover() {

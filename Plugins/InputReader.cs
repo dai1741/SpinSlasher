@@ -17,6 +17,8 @@ public abstract class InputReader
 	public abstract bool IsTryingToJump {
 		get;
 	}
+	
+	public abstract void OnGUI();
 }
 
 	
@@ -44,6 +46,9 @@ class KeyboardInputReader : InputReader {
 		get {
 			return Input.GetButtonDown("Jump") || Input.GetButton("Jump");
 		}
+	}
+	
+	public override void OnGUI() {
 	}
 }
 
@@ -84,8 +89,21 @@ class PhysicalInputReader : InputReader {
 	
 	public override bool IsTryingToJump {
 		get {
-			// 上方向の加速度を感じたらジャンプしたことに 
-			return Input.acceleration.z > 0;
+			// ジャンプボタン押下時か上方向の加速度を感じたらジャンプしたことに 
+			return jumpButtonHovered || Input.acceleration.z > 0;
 		}
+	}
+	
+	private bool jumpButtonHovered = false;
+	
+	public override void OnGUI() {
+		// 色々ひどい 
+		float w = Screen.width / 5;
+		float h = Screen.height / 5;
+		
+		// 縦幅-20はスコア表示の分 
+		GUI.Button (new Rect(Screen.width - w, Screen.height - h - 20, w, h),
+			new GUIContent("Jump", "JMPD!!"));
+		jumpButtonHovered = (GUI.tooltip == "JMPD!!");
 	}
 }
