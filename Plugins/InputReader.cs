@@ -83,27 +83,43 @@ class PhysicalInputReader : InputReader {
 	public override bool IsTryingToSpin {
 		get {
 			// 画面をタップしていたらスピン 
-			return Input.touches.Length > 0;
+			return Input.touchCount - GetJumpCount() > 0;
 		}
 	}
 	
 	public override bool IsTryingToJump {
 		get {
 			// ジャンプボタン押下時か上方向の加速度を感じたらジャンプしたことに 
-			return jumpButtonHovered || Input.acceleration.z > 0;
+			return GetJumpCount() > 0 || Input.acceleration.z > 0;
 		}
 	}
 	
-	private bool jumpButtonHovered = false;
-	
 	public override void OnGUI() {
 		// 色々ひどい 
-		float w = Screen.width / 5;
-		float h = Screen.height / 5;
-		
-		// 縦幅-20はスコア表示の分 
-		GUI.Button (new Rect(Screen.width - w, Screen.height - h - 20, w, h),
-			new GUIContent("Jump", "JMPD!!"));
-		jumpButtonHovered = (GUI.tooltip == "JMPD!!");
+		GUI.Box (JumpButtonField, "");
+		var orig = GUI.skin.label.alignment;
+		GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+		GUI.Label (JumpButtonField, "Jump");
+		GUI.skin.label.alignment = orig;
+	}
+	
+	private Rect JumpButtonField {
+		get {
+			float w = Screen.width / 5;
+			float h = Screen.height / 4;
+			// 縦幅-20はスコア表示の分 
+			return new Rect(Screen.width - w, Screen.height - h - 20, w, h);
+		}
+	}
+	
+	private int GetJumpCount() {
+		int count = 0;
+		var r = JumpButtonField;
+		foreach (Touch touch in Input.touches) {
+			var pos = touch.position;
+			pos.y = Screen.height - pos.y; // なぜか反転している!!!? 
+			if (r.Contains(pos)) count++;
+		}
+		return count;
 	}
 }
