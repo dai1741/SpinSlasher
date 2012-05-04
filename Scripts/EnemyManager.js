@@ -1,3 +1,5 @@
+import System.Collections.Generic;
+
 var creatures : GameObject[];
 var appearOnceIn : float[];
 var initialSpeed = 1.0;
@@ -8,6 +10,10 @@ var maxSpeedIncrease = 0.0;
 var creationInterval = 1.0;
 var creationIntervalDecrease = 0.0;
 var minCreationInterval = 1.0;
+
+var destructionInterval = 1.0;
+var destroyDist = Mathf.Infinity;
+private static var sqrDestroyDist : float;
 
 var firstPlayWait = 1.0;
 var firstPlayDescs : GameObject;
@@ -39,6 +45,8 @@ function Start() {
 	if(EntireGameManager.Instance != null) {
 		MigrateGameInfo();
 		SendMessage(isFirstPlay ? "CreateEnemiesWithDesc" : "CreateEnemies");
+		sqrDestroyDist = destroyDist * destroyDist;
+		SendMessage("DestroyFarEnemies");
 	}
 }
 
@@ -102,4 +110,26 @@ protected function CreateEnemy(enemy : GameObject) {
 	var newCreature : GameObject = Instantiate(enemy, randomVector, Quaternion.identity);
 	newCreature.rigidbody.velocity = velocity;
 	
+	// 遠方で消滅する敵を管理する 
+	if (enemy.GetComponent.<EnemyMoves>().canDieByDistance) {
+		vanishableEnemyList.AddLast(enemy);
+	}
+}
+
+private var vanishableEnemyList = new LinkedList.<GameObject>();
+
+private function DestroyFarEnemies() {
+	while(true) {
+		yield WaitForSeconds(destructionInterval);
+		
+		var obj : LinkedListNode.<GameObject> = vanishableEnemyList.First;
+		while (obj != null) {
+			var isDestroyed = obj.Value == null;
+			if (isDestroyed || sqrDestroyDist < obj.Value.transform.position.sqrMagnitude) {
+				vanishableEnemyList.Remove(obj);
+				if (!isDestroyed) Destroy(obj.Value);
+			}
+			obj = obj.Next;
+		}
+	}
 }

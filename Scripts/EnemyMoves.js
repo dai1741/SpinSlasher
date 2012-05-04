@@ -4,6 +4,7 @@ public class EnemyMoves extends MonoBehaviour {
 
 	var basePoint : int;
 	var incresePoint : int; //変数名誤字ったけどリファクタリングの仕方がわからない… 
+	var canDieByDistance = false;
 	
 	function OnCollisionEnter(collisionInfo : Collision) {
 		var other = collisionInfo.collider;
