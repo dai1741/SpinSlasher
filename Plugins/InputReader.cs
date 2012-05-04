@@ -87,10 +87,12 @@ class PhysicalInputReader : InputReader {
 		}
 	}
 	
+	private bool lastJumpButtonWasPressed = false;
+
 	public override bool IsTryingToJump {
 		get {
 			// ジャンプボタン押下時か上方向の加速度を感じたらジャンプしたことに 
-			return GetJumpCount() > 0 || Input.acceleration.z > 0;
+			return (lastJumpButtonWasPressed = GetJumpCount() > 0) || Input.acceleration.z > 0;
 		}
 	}
 	
@@ -105,10 +107,12 @@ class PhysicalInputReader : InputReader {
 	
 	private Rect JumpButtonField {
 		get {
-			float w = Screen.width / 5;
-			float h = Screen.height / 4;
+			float focusedSize = lastJumpButtonWasPressed ? 2 : 0;
+			float w = Screen.width / 5 + focusedSize * 2;
+			float h = Screen.height / 4 + focusedSize * 2;
 			// 縦幅-20はスコア表示の分 
-			return new Rect(Screen.width - w, Screen.height - h - 20, w, h);
+			return new Rect(Screen.width - w + focusedSize,
+					Screen.height - h + focusedSize - 20, w, h);
 		}
 	}
 	
