@@ -46,6 +46,7 @@ private var isSpinning : boolean = false;
 private var secsToJump : float = 0;
 
 private var origMaterial : Material;
+private var myTransform : Transform;
 
 function Start()
 {
@@ -61,6 +62,7 @@ function Start()
 	origMaterial = GetMutekiRenderer().materials[mutekiMaterialIndex];
 	
 	GameManager.Instance.SpinPointNeededToRespin = spinPointNeededToRespin;
+	myTransform = transform;
 }
 
 private var playerParts : GameObject[];
@@ -75,7 +77,7 @@ function Update()
 function FixedUpdate() 
 {
 	if(GameManager.Instance == null) return; // has to wait for his awake.
-	if(transform.position.y < deadY) {
+	if(myTransform.position.y < deadY) {
 		OnGameover();
 		return;
 	}
@@ -108,7 +110,7 @@ function FixedUpdate()
 				Mathf.Min(spinPointComsumePerSec * Time.deltaTime
 						* (isAerial ? spinPointAerialComsumeRate : 1),
 						GameManager.Instance.spinPoint);
-		transform.Rotate(Vector3.up * Time.deltaTime * curRotateSpeed);
+		myTransform.Rotate(Vector3.up * Time.deltaTime * curRotateSpeed);
 	}
 	else {
 		GameManager.Instance.spinPoint = Mathf.Min(GameManager.Instance.spinPoint + spinPointRepairPerSec
@@ -135,7 +137,7 @@ function FixedUpdate()
 	}
 	
 	if(!IsSpinningSticky()) {
-		if(moveDirection != Vector3.zero) transform.rotation = Quaternion.LookRotation(moveDirection);
+		if(moveDirection != Vector3.zero) myTransform.rotation = Quaternion.LookRotation(moveDirection);
 	}
 	
 	//ここからジャンプ処理。カオス 

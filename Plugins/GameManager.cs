@@ -103,6 +103,7 @@ public class GameManager : MonoBehaviour {
 		
 		UpdateCamera();
 		UpdateInputReader();
+		spinPointBar = GameObject.Find("SpinPointBar");
 		
 		SoundEnabled = MyPrefs.SoundEnabled;
 		bgm = (PlayableAudio) GetComponent("AudioChain");
@@ -147,9 +148,10 @@ public class GameManager : MonoBehaviour {
 	
 	private bool showingSettings = false;
 	private bool gotHighscore = false;
+	private GameObject spinPointBar;
 	
 	void OnGUI() {
-		var texture = GameObject.Find("SpinPointBar").GetComponent<GUITexture>();
+		var texture = spinPointBar.GetComponent<GUITexture>();
 		texture.pixelInset = new Rect(texture.pixelInset.x, texture.pixelInset.y,
 				spinPoint * maxSpinGUISizeRate, texture.pixelInset.height);
 		
