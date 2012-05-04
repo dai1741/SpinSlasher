@@ -60,6 +60,9 @@ public class GameManager : MonoBehaviour {
 			//_mainCamera.backgroundColor = mode.bgColor;
 		}
 	}
+	void UpdateCamera() {
+		MainCamera = MyPrefs.GetCameraObject().GetComponent<Camera>();
+	}
 	
 	private InputReader _inputReader;
 	public InputReader InputReader {
@@ -69,7 +72,7 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 	public void UpdateInputReader() {
-		_inputReader = MyPrefs.INPUT_INSTANCES[MyPrefs.InputIndex];
+		_inputReader = MyPrefs.GetInputReader();
 	}
 	
 	private float maxSpinGUISizeRate;
@@ -122,11 +125,6 @@ public class GameManager : MonoBehaviour {
 		mode = EntireGameManager.Instance.CurrentGameMode;
 		Time.timeScale = timeScale = mode.timeScale;
 		initialHealth = mode.initialPlayerHealth;
-	}
-	
-	void UpdateCamera() {
-		int i = PlayerPrefs.GetInt("Camera");
-		MainCamera = GameObject.Find(MyPrefs.CAMERA_PREF[i] + " Camera").GetComponent<Camera>();
 	}
 	
 	void Update() {
