@@ -149,6 +149,9 @@ public class GameManager : MonoBehaviour {
 	private bool showingSettings = false;
 	private bool gotHighscore = false;
 	private GameObject spinPointBar;
+
+	private Rect menuArea = new Rect (Screen.width/2 - 140, Screen.height/2 - 140, 280, 280);
+	private Rect menuAreaInner = new Rect (Screen.width/2 - 130, Screen.height/2 - 100, 260, 230);
 	
 	void OnGUI() {
 		var texture = spinPointBar.GetComponent<GUITexture>();
@@ -158,8 +161,8 @@ public class GameManager : MonoBehaviour {
 		if(Gameover) {
 			Time.timeScale = 0;
 			
-			GUI.Box (new Rect (Screen.width/2 - 120, Screen.height/2 - 120, 240, 240), "Game Over");
-			GUILayout.BeginArea (new Rect (Screen.width/2 - 110, Screen.height/2 - 80, 220, 190));
+			GUI.Box (menuArea, "Game Over");
+			GUILayout.BeginArea (menuAreaInner);
 		
 			GUILayout.BeginHorizontal();
 			GUILayout.Label("Your score: " + score);
@@ -216,10 +219,8 @@ public class GameManager : MonoBehaviour {
 		else if(Paused) {
 			Time.timeScale = 0;
 			
-			GUI.Box (new Rect (Screen.width/2 - 120, Screen.height/2 - 120, 240, 240),
-			         showingSettings ? "Pause - Settings" : "Pause");
-			Rect area = new Rect (Screen.width/2 - 110, Screen.height/2 - 80, 220, 190);
-			GUILayout.BeginArea (area);
+			GUI.Box (menuArea, showingSettings ? "Pause - Settings" : "Pause");
+			GUILayout.BeginArea (menuAreaInner);
 			
 			if(!showingSettings) {
 				if(GUILayout.Button ("Resume")) {
@@ -239,7 +240,7 @@ public class GameManager : MonoBehaviour {
 			}
 			else {
 				settingsGUI.InitIfNeeded();
-				SettingsGUIFragment.MenuState state = settingsGUI.Draw(area);
+				SettingsGUIFragment.MenuState state = settingsGUI.Draw(menuAreaInner);
 				//C#のswitch文むずすぎ 
 				if(state == SettingsGUIFragment.MenuState.CHANGED) {
 					if((settingsGUI.ChangeBits & SettingsGUIFragment.CameraChanged) != 0) {

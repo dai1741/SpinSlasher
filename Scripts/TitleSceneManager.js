@@ -57,7 +57,7 @@ function OnGUI() {
 	}
 
 	var width = Screen.width <= 600 ? Screen.width/9 * 4 : Screen.width/3; //なんとか押し込む
-	var area = new Rect (Screen.width/2 - width/2, Screen.height/2 - 5, width, Screen.height/2 + 5);
+	var area = new Rect (Screen.width/2 - width/2, Screen.height/5 * 2, width, Screen.height/5 * 3);
 	GUILayout.BeginArea (area);
 	GUILayout.FlexibleSpace();
 	

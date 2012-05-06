@@ -35,6 +35,8 @@ public class EntireGameManager : MonoBehaviour {
 			MyPrefs.InitDefaults();
 			
 			currentPlayer = characters[0];
+			
+			gameObject.AddComponent<GameInitializer>();
 		}
 		else if(Instance != this) {
 			Destroy(gameObject); //HAHAHA
